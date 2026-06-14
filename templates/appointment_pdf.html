@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Appointment Receipt</title>
+
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        body {
+            font-family: "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: #161515;
+            background: #fff;
+        }
+
+        .container {
+            page-break-inside: avoid;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .receipt {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .receipt th,
+        .receipt td {
+            padding: 7px 0;
+            text-align: left;
+            vertical-align: top;
+            font-size: 14px;
+        }
+
+        .receipt th {
+            width: 35%;
+            font-weight: bold;
+        }
+
+        .receipt td {
+            padding-left: 10px;
+        }
+
+        .status {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* COMMENTS SECTION */
+
+        .comments-box {
+            margin-top: 25px;
+        }
+
+        .comments-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .comments-content {
+            border: 1.5px solid #000;
+            min-height: 110px;
+            padding: 12px;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border-radius: 3px;
+        }
+
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .footer p {
+            margin: 6px 0;
+        }
+
+        .note {
+            margin-top: 10px;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+            }
+
+            .container {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h2>Office of the Speaker</h2>
+        <p>Appointment Scheduled</p>
+    </div>
+
+    <table class="receipt">
+        <tr>
+            <th>Appointment Code</th>
+            <td>{{ appointment.id }}</td>
+        </tr>
+
+        <tr>
+            <th>Date</th>
+            <td>{{ appointment.appointment_date }}</td>
+        </tr>
+
+        <tr>
+            <th>Time</th>
+            <td>{{ appointment.appointment_time }}</td>
+        </tr>
+
+        <tr>
+            <th>Full Name</th>
+            <td><strong>{{ appointment.guest_name }}</strong></td>
+        </tr>
+
+        <tr>
+            <th>Email</th>
+            <td>{{ appointment.email }}</td>
+        </tr>
+
+        <tr>
+            <th>Phone</th>
+            <td>{{ appointment.phone }}</td>
+        </tr>
+
+        <tr>
+            <th>Institution</th>
+            <td>{{ appointment.institution }}</td>
+        </tr>
+
+        <tr>
+            <th>Service</th>
+            <td>{{ appointment.service }}</td>
+        </tr>
+
+        <tr>
+            <th>Purpose</th>
+            <td>{{ appointment.purpose }}</td>
+        </tr>
+
+        <tr>
+            <th>Status</th>
+            <td>
+                {% if appointment.status == 'Approved' %}
+                    <span class="status approved">Approved</span>
+                {% elif appointment.status == 'Rejected' %}
+                    <span class="status rejected">Rejected</span>
+                {% else %}
+                    <span class="status pending">Pending</span>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+
+    <div class="comments-box">
+        <div class="comments-title">
+            COMMENTS / REMARKS
+        </div>
+
+        <div class="comments-content">
+{% if appointment.comments %}
+{{ appointment.comments }}
+{% else %}
+For Comments
+{% endif %}
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Generated by Parliamentary Appointment System</p>
+
+        <p>
+            Created:
+            {{ appointment.created_at.strftime("%Y-%m-%d %H:%M") }}
+        </p>
+
+        {% if appointment.status == 'Approved' %}
+        <p class="note">
+            Note: This appointment has been approved and cannot be modified.
+        </p>
+        {% endif %}
+    </div>
+
+</div>
+
+</body>
+</html>
+

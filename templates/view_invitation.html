@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- =========================
+        ERP HEADER (COMPACT GOV STYLE)
+    ========================== -->
+    <div class="erp-card shadow-sm">
+
+        <div class="erp-header">
+
+            <div class="erp-title">
+                <i class="bi bi-envelope-open"></i>
+                <div class="title-text">
+                    <h6>Invitation</h6>
+                   
+                </div>
+            </div>
+
+            <span class="status-badge
+                {% if invite.status == 'Accepted' %} accepted
+                {% elif invite.status == 'Declined' %} declined
+                {% else %} pending {% endif %}">
+                {{ invite.status }}
+            </span>
+
+        </div>
+
+        <!-- =========================
+            BODY
+        ========================== -->
+        <div class="erp-body">
+
+            <div class="info-grid">
+
+                <div class="info-item">
+                    <label>Sender</label>
+                    <div class="value">{{ invite.sender }}</div>
+                </div>
+
+                <div class="info-item">
+                    <label>Recipient</label>
+                    <div class="value">{{ invite.recipient }}</div>
+                </div>
+
+                <div class="info-item">
+                    <label>Subject</label>
+                    <div class="value">{{ invite.subject }}</div>
+                </div>
+
+                <div class="info-item full">
+                    <label>Message</label>
+                    <div class="value message-box">{{ invite.message }}</div>
+                </div>
+
+                <div class="info-item">
+                    <label>Date</label>
+                    <div class="value">{{ invite.date.strftime("%Y-%m-%d") }}</div>
+                </div>
+
+            </div>
+
+            <!-- =========================
+                ICON ACTION BAR (SMALL + COLOR SAFE)
+            ========================== -->
+            <div class="action-bar">
+
+                <a href="{{ url_for('appointments.invitations') }}"
+                   class="icon-btn back"
+                   title="Back">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+
+                <a href="{{ url_for('appointments.new_invitation', edit=invite.id) }}"
+                   class="icon-btn primary"
+                   title="Edit">
+                    <i class="bi bi-pencil"></i>
+                </a>
+
+                <form method="POST"
+                      action="{{ url_for('appointments.accept_invitation', id=invite.id) }}">
+                    <button class="icon-btn success"
+                            {% if invite.status == 'Accepted' %}disabled{% endif %}
+                            title="Accept">
+                        <i class="bi bi-check-circle"></i>
+                    </button>
+                </form>
+
+                <form method="POST"
+                      action="{{ url_for('appointments.decline_invitation', id=invite.id) }}">
+                    <button class="icon-btn danger"
+                            {% if invite.status == 'Declined' %}disabled{% endif %}
+                            title="Decline">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </form>
+
+                <form method="POST"
+                      action="{{ url_for('appointments.delete_invitation', id=invite.id) }}"
+                      onsubmit="return confirm('Delete this invitation?');">
+                    <button class="icon-btn danger-outline"
+                            title="Delete">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+
+                <button class="icon-btn outline"
+                        data-bs-toggle="modal"
+                        data-bs-target="#printModal"
+                        title="Print">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- =========================
+    PRINT MODAL
+========================= -->
+<div class="modal fade" id="printModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+
+    <div class="modal-content erp-modal">
+
+      <div class="modal-header">
+        <h6><i class="bi bi-printer"></i> Print Invitation Record</h6>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body" id="printArea">
+
+        <div class="print-title">OFFICIAL INVITATION RECORD</div>
+
+        <table class="table table-bordered table-sm">
+            <tr><th>Sender</th><td>{{ invite.sender }}</td></tr>
+            <tr><th>Recipient</th><td>{{ invite.recipient }}</td></tr>
+            <tr><th>Subject</th><td>{{ invite.subject }}</td></tr>
+            <tr><th>Message</th><td>{{ invite.message }}</td></tr>
+            <tr><th>Date</th><td>{{ invite.date.strftime("%Y-%m-%d") }}</td></tr>
+            <tr><th>Status</th><td>{{ invite.status }}</td></tr>
+        </table>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x"></i>
+        </button>
+        <button class="btn btn-sm btn-primary" onclick="printInvitation()">
+            <i class="bi bi-printer"></i>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- =========================
+    STYLES (ERP GOV DASHBOARD)
+========================= -->
+<style>
+
+body {
+    background: #eef2f7;
+    font-family: "Inter", sans-serif;
+}
+
+/* CARD */
+.erp-card {
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+/* HEADER (20px STYLE COMPACT) */
+.erp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: linear-gradient(135deg, #1d4ed8, #0f172a);
+    color: #fff;
+}
+
+.erp-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.erp-title i {
+    font-size: 14px;
+    padding: 6px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.12);
+}
+
+.erp-title h6 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.erp-title small {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+/* STATUS */
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 14px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.status-badge.accepted { background: #16a34a; color: #fff; }
+.status-badge.declined { background: #dc2626; color: #fff; }
+.status-badge.pending { background: #f59e0b; color: #111; }
+
+/* BODY */
+.erp-body {
+    padding: 14px;
+}
+
+/* GRID */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.info-item.full {
+    grid-column: span 2;
+}
+
+/* INFO BOX */
+.info-item {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.info-item label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.value {
+    margin-top: 3px;
+    font-size: 13px;
+}
+
+/* ACTION BAR */
+.action-bar {
+    display: flex;
+    gap: 6px;
+    margin-top: 14px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+/* =========================
+   ICON BUTTONS (SMALL + COLOR SAFE)
+========================= */
+.icon-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    font-size: 14px;
+    transition: .2s;
+    cursor: pointer;
+}
+
+.icon-btn:hover {
+    transform: translateY(-1px);
+    background: #f3f4f6;
+}
+
+.icon-btn.primary { color: #1d4ed8; }
+.icon-btn.success { color: #16a34a; }
+.icon-btn.danger { color: #dc2626; }
+.icon-btn.danger-outline { color: #dc2626; border-color:#fecaca; }
+.icon-btn.outline { color: #6b7280; }
+
+/* DISABLED */
+.icon-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* MODAL */
+.erp-modal {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.print-title {
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+/* MOBILE */
+@media(max-width:768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-item.full {
+        grid-column: span 1;
+    }
+
+    .action-bar {
+        justify-content: center;
+    }
+}
+
+</style>
+
+<script>
+function printInvitation() {
+    const printContents = document.getElementById("printArea").innerHTML;
+    const originalContents = document.body.innerHTML;
+
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
+
+    location.reload();
+}
+</script>
+
+{% endblock %}

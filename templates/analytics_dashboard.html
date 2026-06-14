@@ -1,0 +1,429 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+body,
+h1, h2, h3, h4, h5, h6,
+p, .card, .btn {
+    font-family: "Georgia", "Times New Roman", serif;
+    color: #2c2c2c;
+}
+
+   h3{
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+/* FILTER BAR */
+.filter-bar{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+
+    /* 🔧 reduced spacing */
+    margin-bottom:8px;
+
+    gap:10px;
+}
+
+.filter-bar .btn{
+    font-size:.45rem;
+    padding:4px 10px;
+}
+
+/* CHARTS */
+.chart-container{height:240px; position:relative;}
+.small-chart{height:170px;}
+.service-chart-container{height:270px;}
+
+/* CARDS */
+.stat-card{
+    border-radius:14px;
+    transition:.2s ease;
+}
+
+.stat-card:hover{transform:translateY(-3px);}
+
+.stat-card .card-body{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+}
+
+.stat-icon{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:.95rem;
+}
+
+.stat-label{
+    font-size:.62rem;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:#6c757d;
+}
+
+.stat-value{
+    font-size:1.15rem;
+    font-weight:700;
+}
+
+.btn-back{
+    font-size:.72rem;
+    padding:6px 10px;
+    border-radius:50px;
+    background:#0d6efd;
+    color:#fff;
+    border:none;
+}
+</style>
+<!-- 🔧 reduced vertical padding -->
+<div class="container-fluid px-4 py-2">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+
+        <h6 class="fw-bold mb-0">
+            <i class="bi bi-bar-chart-line-fill text-primary"></i>
+            Analytics Dashboard
+        </h6>
+
+        <div class="d-flex align-items-center gap-2">
+
+            <!-- 📄 REPORT BUTTON (NEW) -->
+            <a href="{{ url_for('appointments.speaker_report') }}"
+               class="btn btn-outline-danger btn-sm">
+                📄 Report
+            </a>
+
+            <!-- Filter Dropdown -->
+            <div class="dropdown">
+
+                <button
+                    class="btn btn-outline-primary btn-sm dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+
+                    <i class="bi bi-funnel-fill me-1"></i>
+                    <span id="filterLabel">All</span>
+
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+
+                    <li>
+                        <a class="dropdown-item"
+                           href="#"
+                           onclick="selectFilter('today','Today')">
+                            📅 Today
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item"
+                           href="#"
+                           onclick="selectFilter('monthly','This Month')">
+                            📆 This Month
+                        </a>
+                    </li>
+
+                    <li>
+                        <a class="dropdown-item"
+                           href="#"
+                           onclick="selectFilter('last_month','Last Month')">
+                            🗓 Last Month
+                        </a>
+                    </li>
+
+                    <li><hr class="dropdown-divider"></li>
+
+                    <li>
+                        <a class="dropdown-item"
+                           href="#"
+                           onclick="selectFilter('all','All')">
+                            📊 All
+                        </a>
+                    </li>
+
+                </ul>
+
+            </div>
+
+            <!-- Back Button -->
+            <a href="{{ url_for('admin.admin_dashboard') }}"
+               class="btn btn-back">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- KPI -->
+    <div class="row g-2 mb-3">
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="stat-icon bg-primary-subtle text-primary">📊</div>
+                    <div>
+                        <div class="stat-label">Total</div>
+                        <div class="stat-value" id="total">{{ total }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="stat-icon bg-success-subtle text-success">✔</div>
+                    <div>
+                        <div class="stat-label">Approved</div>
+                        <div class="stat-value" id="approved">{{ approved }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="stat-icon bg-warning-subtle text-warning">⏳</div>
+                    <div>
+                        <div class="stat-label">Pending</div>
+                        <div class="stat-value" id="pending">{{ pending }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="stat-icon bg-danger-subtle text-danger">❌</div>
+                    <div>
+                        <div class="stat-label">Rejected</div>
+                        <div class="stat-value" id="rejected">{{ rejected }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TODAY -->
+    <div class="row g-2 mb-3">
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="stat-icon bg-info-subtle text-info">📅</div>
+                    <div>
+                        <div class="stat-label">Today's Meetings</div>
+                        <div class="stat-value text-info" id="todayMeetings">
+                            {{ today_meetings }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="row g-3">
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-semibold">Status</div>
+                <div class="card-body">
+                    <div class="chart-container small-chart">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-semibold">Service Breakdown</div>
+                <div class="card-body">
+                    <div class="service-chart-container">
+                        <canvas id="serviceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-semibold">Trend</div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+let statusChart, serviceChart, monthlyChart;
+
+// ================= SAFE OBJECT =================
+function safe(obj){
+    return obj || {};
+}
+
+// ================= FILTER DROPDOWN =================
+function selectFilter(range, label){
+
+    document.getElementById("filterLabel").innerText = label;
+
+    loadFilter(range);
+
+}
+
+// ================= RENDER CHARTS =================
+function renderCharts(data){
+
+    const statusData = safe(data.status_data);
+    const serviceData = safe(data.service_data);
+    const monthlyData = safe(data.monthly_requests);
+
+    // STATUS CHART
+    if(statusChart) statusChart.destroy();
+
+    statusChart = new Chart(
+        document.getElementById("statusChart"),
+        {
+            type:"doughnut",
+            data:{
+                labels:Object.keys(statusData),
+                datasets:[{
+                    data:Object.values(statusData),
+                    backgroundColor:[
+                        "#198754",
+                        "#ffc107",
+                        "#dc3545"
+                    ]
+                }]
+            },
+            options:{
+                responsive:true,
+                maintainAspectRatio:false
+            }
+        }
+    );
+
+    // SERVICE CHART
+    if(serviceChart) serviceChart.destroy();
+
+    const entries = Object.entries(serviceData)
+                          .sort((a,b)=>b[1]-a[1]);
+
+    serviceChart = new Chart(
+        document.getElementById("serviceChart"),
+        {
+            type:"bar",
+            data:{
+                labels:entries.map(e=>e[0]),
+                datasets:[{
+                    data:entries.map(e=>e[1]),
+                    backgroundColor:"#0d6efd"
+                }]
+            },
+            options:{
+                responsive:true,
+                maintainAspectRatio:false,
+                indexAxis:"y"
+            }
+        }
+    );
+
+    // MONTHLY TREND
+    if(monthlyChart) monthlyChart.destroy();
+
+    monthlyChart = new Chart(
+        document.getElementById("monthlyChart"),
+        {
+            type:"line",
+            data:{
+                labels:Object.keys(monthlyData),
+                datasets:[{
+                    data:Object.values(monthlyData),
+                    borderColor:"#0d6efd",
+                    backgroundColor:"rgba(13,110,253,.1)",
+                    fill:true,
+                    tension:.3
+                }]
+            },
+            options:{
+                responsive:true,
+                maintainAspectRatio:false
+            }
+        }
+    );
+
+    // KPI CARDS
+    document.getElementById("total").textContent =
+        data.total ?? 0;
+
+    document.getElementById("approved").textContent =
+        data.approved ?? 0;
+
+    document.getElementById("pending").textContent =
+        data.pending ?? 0;
+
+    document.getElementById("rejected").textContent =
+        data.rejected ?? 0;
+
+    document.getElementById("todayMeetings").textContent =
+        data.today_meetings ?? 0;
+}
+
+// ================= LOAD FILTER =================
+function loadFilter(range){
+
+    fetch(
+        "{{ url_for('admin.analytics_dashboard') }}?range=" + range,
+        {
+            headers:{
+                "X-Requested-With":"XMLHttpRequest"
+            }
+        }
+    )
+    .then(response => response.json())
+    .then(data => {
+
+        renderCharts(data);
+
+    })
+    .catch(error => {
+
+        console.error("Analytics error:", error);
+
+    });
+
+}
+
+// ================= INITIAL LOAD =================
+document.addEventListener("DOMContentLoaded", function(){
+
+    document.getElementById("filterLabel").innerText = "All";
+
+    loadFilter("all");
+
+});
+
+</script>
+
+{% endblock %}

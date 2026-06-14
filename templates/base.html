@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Appointment Booking System</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+
+/* ===============================
+   GLOBAL
+================================*/
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: #f4f6fb;
+    margin: 0;
+    font-size: 12px;
+}
+
+/* ===============================
+   TOP NAVBAR
+================================*/
+.top-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px 0 0; /* no left padding */
+    z-index: 1100;
+}
+
+/* ===============================
+   BRAND
+================================*/
+.brand-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.brand-title h4 {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+.brand-title i {
+    color: #2c52b1;
+    font-size: 18px;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===============================
+   BRAND BADGE
+================================*/
+.brand-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #0f1f43, #60a5fa);
+    color: #fff;
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: .3px;
+    box-shadow: 0 3px 11px rgba(37,99,235,.25);
+    transition: all .25s ease;
+}
+
+.brand-pill:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37,99,235,.35);
+}
+
+/* ===============================
+   LAYOUT
+================================*/
+.layout-wrapper {
+    display: flex;
+    margin-top: 60px;
+    height: calc(100vh - 60px);
+}
+
+/* ===============================
+   SIDEBAR
+================================*/
+.sidebar {
+    width: 190px;
+    background: #0f172a;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255,255,255,.08);
+    padding-top: 6px;
+    font-size: 12px;
+}
+
+/* ===============================
+   PROFILE
+================================*/
+.sidebar-profile {
+    text-align: center;
+    padding: 14px 10px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.profile-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin: auto;
+    color: #fff;
+    cursor: pointer;
+    transition: transform .2s ease;
+    font-size: 14px;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.08);
+}
+
+.profile-name {
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.profile-role {
+    font-size: 10px;
+    color: #cbd5e1;
+    margin-top: 2px;
+    font-style: italic;
+}
+
+/* ===============================
+   SIDEBAR SECTIONS
+================================*/
+.sidebar-section {
+    margin-top: 4px;
+}
+
+.sidebar-toggle {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.sidebar-toggle:hover {
+    color: #fff;
+}
+
+.sidebar-toggle i {
+    transition: transform .2s ease;
+}
+
+.sidebar-toggle.active i {
+    transform: rotate(180deg);
+}
+
+/* ===============================
+   COLLAPSIBLE
+================================*/
+.collapsible {
+    max-height: 500px;
+    overflow: hidden;
+    transition: max-height .3s ease, opacity .2s ease;
+    opacity: 1;
+}
+
+.collapsible.collapsed {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ===============================
+   MENU
+================================*/
+.sidebar-menu {
+    list-style: none;
+    padding: 0 6px;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    margin-bottom: 3px;
+}
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    color: #cbd5e1;
+    font-size: 12px;
+    text-decoration: none;
+    transition: all .2s ease;
+}
+
+.sidebar-menu a:hover {
+    background: rgba(255,255,255,.08);
+    color: #fff;
+    transform: translateX(3px);
+}
+
+.sidebar-menu a.active {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ===============================
+   CONTENT AREA
+================================*/
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+}
+
+/* ===============================
+   FOOTER
+================================*/
+.footer {
+    margin-top: 30px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* ===============================
+   MOBILE
+================================*/
+@media (max-width:992px) {
+
+    .sidebar {
+        width: 70px;
+    }
+
+    .profile-name,
+    .profile-role,
+    .sidebar-menu span {
+        display: none;
+    }
+
+    .sidebar-toggle {
+        justify-content: center;
+    }
+
+    .brand-pill {
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+}
+
+/* ===============================
+   ICON BOX
+================================*/
+.brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(37,99,235,.12);
+    color: #2563eb;
+    font-size: 18px;
+    position: relative;
+}
+
+/* ===============================
+   PULSE GLOW
+================================*/
+.brand-mark::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background: rgba(37,99,235,.35);
+    opacity: 0;
+    transform: scale(.8);
+    animation: pulseGlow 2.2s ease-in-out infinite;
+    z-index: 0;
+}
+
+.brand-mark i {
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes pulseGlow {
+    0% {
+        opacity: 0;
+        transform: scale(.8);
+    }
+
+    40% {
+        opacity: .25;
+    }
+
+    70% {
+        opacity: .1;
+        transform: scale(1.15);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.25);
+    }
+}
+
+/* ===============================
+   BUTTON ICON
+================================*/
+.btn-icon {
+    font-size: .9rem;
+    padding: 6px 10px;
+    border-radius: 50px;
+}
+
+</style>
+
+
+<body>
+
+<!-- TOP NAVBAR -->
+
+<div class="top-navbar">
+
+
+<div class="brand-title">
+    <i class="bi bi-calendar-week"></i>
+
+    <h4 class="m-0">
+        <span class="brand-pill">Appointment Booking</span>
+    </h4>
+</div>
+
+<div>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('auth.logout') }}"
+       class="btn btn-danger btn-icon"
+       data-bs-toggle="tooltip"
+       title="Logout">
+        <i class="bi bi-box-arrow-right"></i>
+    </a>
+    {% else %}
+    <a href="{{ url_for('auth.login') }}"
+       class="btn btn-primary btn-icon"
+       data-bs-toggle="tooltip"
+       title="Login">
+        <i class="bi bi-box-arrow-in-right"></i>
+    </a>
+    {% endif %}
+</div>
+
+</div>
+
+<!-- LAYOUT -->
+
+<div class="layout-wrapper">
+
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+    {% if current_user.is_authenticated %}
+    <div class="sidebar-profile">
+
+        <a href="{{ url_for('user_mgmt.edit_profile', id=current_user.id) }}">
+            <div class="profile-avatar">
+                {{ current_user.full_name[0] if current_user.full_name else "U" }}
+            </div>
+        </a>
+
+        <div class="profile-name">
+            {{ current_user.full_name }}
+        </div>
+
+        <div class="profile-role">
+            {{ current_user.role|capitalize }}
+        </div>
+
+    </div>
+    {% endif %}
+
+    <!-- OVERVIEW -->
+    <div class="sidebar-section">
+
+        <button class="sidebar-toggle" data-target="overviewMenu">
+            <span>Overview</span>
+            <i class="bi bi-chevron-down"></i>
+        </button>
+
+        <ul class="sidebar-menu collapsible" id="overviewMenu">
+
+            <li>
+                <a href="{{ url_for('appointments.dashboard') }}"
+                   class="{% if request.endpoint=='appointments.dashboard' %}active{% endif %}">
+                    <i class="bi bi-grid"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+        </ul>
+
+    </div>
+
+    <!-- APPOINTMENTS -->
+    <div class="sidebar-section">
+
+        <button class="sidebar-toggle" data-target="appointmentsMenu">
+            <span>Appointments</span>
+            <i class="bi bi-chevron-down"></i>
+        </button>
+
+        <ul class="sidebar-menu collapsible" id="appointmentsMenu">
+
+            <li>
+                <a href="{{ url_for('appointments.appointment_list') }}"
+                   class="{% if request.endpoint=='appointments.appointment_list' %}active{% endif %}">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>All Appointments</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('appointments.calendar') }}"
+                   class="{% if request.endpoint=='appointments.calendar' %}active{% endif %}">
+                    <i class="bi bi-calendar-week"></i>
+                    <span>Calendar</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('appointments.invitations') }}"
+                   class="{% if request.endpoint=='appointments.invitations' %}active{% endif %}">
+                    <i class="bi bi-envelope-paper"></i>
+                    <span>Invitations</span>
+                </a>
+            </li>
+
+        </ul>
+
+    </div>
+
+    <!-- ADMINISTRATION -->
+    {% if current_user.is_authenticated and current_user.role in ['admin','speaker','clerk'] %}
+
+    <div class="sidebar-section">
+
+        <button class="sidebar-toggle" data-target="adminMenu">
+            <span>Administration</span>
+            <i class="bi bi-chevron-down"></i>
+        </button>
+
+        <ul class="sidebar-menu collapsible" id="adminMenu">
+
+            <li>
+                <a href="{{ url_for('admin.admin_dashboard') }}"
+                   class="{% if request.endpoint=='admin.admin_dashboard' %}active{% endif %}">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Admin Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('admin.user_management') }}"
+                   class="{% if request.endpoint=='admin.user_management' %}active{% endif %}">
+                    <i class="bi bi-people"></i>
+                    <span>User Management</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('analytics.analytics_dashboard') }}"
+                   class="{% if request.endpoint=='analytics.analytics_dashboard' %}active{% endif %}">
+                    <i class="bi bi-bar-chart"></i>
+                    <span>Analytics</span>
+                </a>
+            </li>
+
+            <!-- SETTINGS -->
+            <li>
+                <a href="{{ url_for('settings.settings_page') }}"
+                   class="{% if request.endpoint=='settings.settings_page' %}active{% endif %}">
+                    <i class="bi bi-gear-fill"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+
+        </ul>
+
+    </div>
+
+    {% endif %}
+
+</aside>
+
+<!-- CONTENT -->
+<main class="content-area">
+
+    {% block content %}{% endblock %}
+
+    <div class="footer">
+        Appointment Booking System © 2026
+    </div>
+
+</main>
+
+
+</div>
+
+</body>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    console.log("Base template loaded");
+
+    /* ===============================
+       BOOTSTRAP TOOLTIPS
+    ================================*/
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+
+    [...tooltipTriggerList].forEach(el => {
+        new bootstrap.Tooltip(el);
+    });
+
+    /* ===============================
+       SIDEBAR COLLAPSIBLE (SAAS STYLE)
+       - Notion-like sections
+       - Saves state in localStorage
+    ================================*/
+    const toggles = document.querySelectorAll(".sidebar-toggle");
+
+    toggles.forEach(btn => {
+
+        const targetId = btn.getAttribute("data-target");
+        const target = document.getElementById(targetId);
+
+        if (!target) return;
+
+        // Load saved state
+        const savedState = localStorage.getItem("sidebar_" + targetId);
+
+        if (savedState === "collapsed") {
+            target.classList.add("collapsed");
+            btn.classList.remove("active");
+        } else {
+            btn.classList.add("active");
+        }
+
+        // Click handler
+        btn.addEventListener("click", () => {
+
+            const isCollapsed = target.classList.contains("collapsed");
+
+            if (isCollapsed) {
+                target.classList.remove("collapsed");
+                btn.classList.add("active");
+                localStorage.setItem("sidebar_" + targetId, "expanded");
+            } else {
+                target.classList.add("collapsed");
+                btn.classList.remove("active");
+                localStorage.setItem("sidebar_" + targetId, "collapsed");
+            }
+
+        });
+
+    });
+
+    /* ===============================
+       OPTIONAL: AUTO-OPEN ACTIVE MENU
+       (Opens section containing active link)
+    ================================*/
+    const activeLink = document.querySelector(".sidebar-menu a.active");
+
+    if (activeLink) {
+        const parentMenu = activeLink.closest(".collapsible");
+        const parentToggle = parentMenu
+            ? document.querySelector(`[data-target="${parentMenu.id}"]`)
+            : null;
+
+        if (parentMenu && parentToggle) {
+            parentMenu.classList.remove("collapsed");
+            parentToggle.classList.add("active");
+            localStorage.setItem("sidebar_" + parentMenu.id, "expanded");
+        }
+    }
+
+});
+</script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Page-specific scripts -->
+{% block scripts %}{% endblock %}
+</body>
+</html>

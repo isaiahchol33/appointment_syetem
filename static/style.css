@@ -1,0 +1,313 @@
+/* =========================================
+   ROOT VARIABLES
+========================================= */
+:root {
+    --primary-color: #0b3d91;
+    --primary-dark: #071c3d;
+    --secondary-color: #f4f6fb;
+    --success-color: #107c10;
+    --danger-color: #d13438;
+    --warning-color: #f9a825;
+    --dark-color: #212529;
+    --light-color: #ffffff;
+    --text-color: #2d2d2d;
+    --muted-color: #6c757d;
+    --shadow-soft: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* =========================================
+   GLOBAL STYLES
+========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    background: var(--secondary-color);
+    font-family: "Segoe UI", sans-serif;
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================
+   LINKS
+========================================= */
+a { text-decoration: none; }
+
+/* =========================================
+   NAVBAR
+========================================= */
+.navbar {
+    padding: 15px 0;
+    background: linear-gradient(90deg, var(--primary-dark), var(--primary-color)) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: white !important;
+}
+.navbar .btn { border-radius: 10px; }
+
+/* =========================================
+   HERO SECTION
+========================================= */
+.hero-section {
+    padding: 100px 0;
+}
+.hero-section h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--primary-dark);
+    line-height: 1.2;
+}
+.hero-section p {
+    font-size: 1.2rem;
+    color: var(--muted-color);
+}
+
+/* =========================================
+   CARDS
+========================================= */
+.card {
+    border: none;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* =========================================
+   STAT CARDS
+========================================= */
+.stats-card {
+    text-align: center;
+    padding: 35px 20px;
+}
+.stats-card h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+.stats-card p {
+    margin-top: 10px;
+    color: var(--muted-color);
+    font-size: 1rem;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+.btn {
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: #fff;
+}
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0a357d, #05142d);
+}
+.btn-success { background: var(--success-color); color: #fff; }
+.btn-danger { background: var(--danger-color); color: #fff; }
+.btn-warning { background: var(--warning-color); color: #000; }
+.btn-dark { background: var(--dark-color); color: #fff; }
+
+/* =========================================
+   FORMS
+========================================= */
+.form-control,
+.form-select,
+textarea {
+    border-radius: 14px;
+    padding: 14px;
+    border: 1px solid #d9e2ec;
+    background: white;
+    transition: all 0.3s ease;
+}
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(11,61,145,0.15);
+}
+.form-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* =========================================
+   TABLES
+========================================= */
+.table {
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+.table thead {
+    background: var(--primary-dark);
+    color: white;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.table thead th { padding: 18px; border: none; }
+.table tbody td { padding: 14px; vertical-align: middle; font-size: 13px; }
+.table tbody tr { transition: all 0.2s ease; }
+.table tbody tr:hover { background: #f1f5ff; }
+.table .btn-sm { padding: 6px 14px; font-size: 0.85rem; }
+
+/* =========================================
+   BADGES
+========================================= */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* =========================================
+   ALERTS
+========================================= */
+.alert {
+    border: none;
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* =========================================
+   SEARCH BAR
+========================================= */
+.input-group-text { border-radius: 14px 0 0 14px; }
+#tableSearch { border-radius: 0 14px 14px 0; }
+
+/* =========================================
+   AUTH PAGES
+========================================= */
+.auth-container {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+.footer {
+    margin-top: auto;
+    padding: 25px 0;
+    background: white;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+}
+
+/* =========================================
+   ICONS
+========================================= */
+.display-1,
+.display-4,
+.display-5 { opacity: 0.95; }
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #edf2f7; }
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+.fade-in { animation: fadeIn 0.5s ease-in-out; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   EMPTY STATES
+========================================= */
+.empty-state {
+    padding: 60px 20px;
+    text-align: center;
+}
+.empty-state i {
+    font-size: 5rem;
+    color: #ced4da;
+}
+
+/* =========================================
+   DASHBOARD SECTION TITLES
+========================================= */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--primary-dark);
+}
+
+/* =========================================
+   PROGRESS BARS
+========================================= */
+.progress {
+    border-radius: 20px;
+    overflow: hidden;
+    background: #e9ecef;
+    height: 8px;
+}
+.progress-bar {
+    border-radius: 20px;
+    transition: width 0.4s ease;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 992px) {
+    .hero-section { text-align: center; padding: 60px 0; }
+    .hero-section h1 { font-size: 3rem; }
+}
+@media (max-width: 768px) {
+    .hero-section h1 { font-size: 2.2rem; }
+    .table { font-size: 14px; }
+    .btn { width: 100%; margin-bottom: 10px; }
+    .navbar-brand { font-size: 1.1rem; }
+    .card { border-radius: 18px; }
+    .stats-card h2 { font-size: 1.6rem; }
+}
+@media (max-width: 576px) {
+    .hero-section { padding: 40px 0; }
+    .hero-section h1 { font-size: 1.8rem; }
+    .hero-section p { font-size: 1rem; }
+}
+
+/* =========================================
+   LOADING BUTTONS
+========================================= */
+.btn-loading { opacity: 0.8; pointer-events: none; }
+
+/* =========================================
+   CUSTOM SHADOWS
+=========================================

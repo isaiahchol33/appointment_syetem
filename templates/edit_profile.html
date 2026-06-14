@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root{
+    --primary:#2563eb;
+    --primary2:#3b82f6;
+    --bg:#f5f7fb;
+    --text:#0f172a;
+    --muted:#64748b;
+}
+
+/* GLOBAL (SMALLER TEXT) */
+body{
+    font-family:"Inter", system-ui, sans-serif;
+    background:
+        radial-gradient(circle at top right, rgba(37,99,235,.06), transparent 45%),
+        radial-gradient(circle at bottom left, rgba(59,130,246,.06), transparent 45%),
+        var(--bg);
+    color:var(--text);
+    font-size:13.5px; /* 🔥 reduced */
+}
+
+/* CARD */
+.profile-card{
+    border:0;
+    border-radius:16px;
+    background:rgba(255,255,255,.95);
+    backdrop-filter: blur(10px);
+    box-shadow:0 6px 18px rgba(15,23,42,.06);
+    overflow:hidden;
+}
+
+/* 🔥 ULTRA COMPACT HEADER */
+.profile-header{
+    background: linear-gradient(135deg, #1d4ed8, #2563eb, #3b82f6);
+    color:#fff;
+    padding:0.45rem 0.9rem; /* 🔥 tighter */
+    position:relative;
+}
+
+.profile-header::after{
+    content:"";
+    position:absolute;
+    right:-110px;
+    top:-110px;
+    width:140px;
+    height:140px;
+    background:rgba(255,255,255,.07);
+    border-radius:50%;
+}
+
+.header-row{
+    display:flex;
+    align-items:center;
+    gap:.6rem;
+}
+
+/* SMALL AVATAR */
+.avatar-circle{
+    width:40px;   /* 🔥 smaller */
+    height:40px;
+    border-radius:50%;
+    background:#fff;
+    color:var(--primary);
+    font-weight:700;
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 4px 12px rgba(0,0,0,.14);
+}
+
+/* HEADER TEXT SMALL */
+.header-text h6{
+    font-size:.88rem; /* 🔥 reduced */
+    font-weight:600;
+    margin:0;
+    line-height:1.1;
+}
+
+.header-text small{
+    font-size:.72rem; /* 🔥 reduced */
+    opacity:.85;
+}
+
+/* BODY */
+.card-body{
+    padding:1.1rem;
+}
+
+/* FORM SECTION */
+.form-section{
+    border:1px solid #e8edf5;
+    border-radius:12px;
+    padding:.85rem;
+    margin-bottom:.75rem;
+    background:#fff;
+    transition:.2s ease;
+}
+
+.form-section:hover{
+    border-color:#cfe0ff;
+}
+
+/* SECTION TITLE */
+.section-title{
+    font-size:.65rem; /* 🔥 reduced */
+    font-weight:700;
+    letter-spacing:.15em;
+    color:var(--primary);
+    margin-bottom:.7rem;
+}
+
+/* LABELS */
+.form-label{
+    font-size:.78rem;
+    font-weight:500;
+    color:#334155;
+    margin-bottom:.3rem;
+}
+
+/* INPUTS (SMALLER HEIGHT) */
+.form-control,
+.form-select{
+    min-height:38px; /* 🔥 reduced */
+    border-radius:10px;
+    font-size:.85rem; /* 🔥 reduced */
+    padding:.4rem .65rem;
+}
+
+/* ROLE BADGE */
+.role-badge{
+    display:inline-flex;
+    align-items:center;
+    padding:.3rem .6rem;
+    border-radius:999px;
+    font-size:.72rem; /* 🔥 reduced */
+    font-weight:600;
+}
+
+.role-admin{ background:#fee2e2; color:#b91c1c; }
+.role-speaker{ background:#dcfce7; color:#15803d; }
+.role-clerk{ background:#fef3c7; color:#b45309; }
+.role-user{ background:#e5e7eb; color:#374151; }
+
+/* ACTIONS */
+.actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:.8rem;
+    gap:.6rem;
+}
+
+/* BUTTONS (SMALLER) */
+.btn{
+    font-size:.82rem;
+    font-weight:600;
+    border-radius:10px;
+    padding:.45rem .9rem;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+    .profile-header{
+        padding:.4rem .7rem;
+    }
+
+    .avatar-circle{
+        width:38px;
+        height:38px;
+        font-size:14px;
+    }
+
+    .actions{
+        flex-direction:column;
+        align-items:stretch;
+    }
+}
+</style>
+
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="profile-card">
+
+                <!-- HEADER -->
+                <div class="profile-header">
+                    <div class="header-row">
+
+                        <div class="avatar-circle">
+                            {{ user.full_name[0]|upper if user.full_name else "U" }}
+                        </div>
+
+                        <div class="header-text">
+                            <h6>{{ user.full_name }}</h6>
+                            <small>Account settings</small>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- BODY -->
+                <div class="card-body">
+
+                    {% if current_user.role == "admin" %}
+                    <div class="form-section">
+                        <div class="section-title">USER</div>
+
+                        <select class="form-select"
+                                onchange="window.location=this.value">
+
+                            {% for u in all_users %}
+                            <option value="{{ url_for('user_mgmt.edit_profile', id=u.id) }}"
+                                    {% if u.id == user.id %}selected{% endif %}>
+                                {{ u.full_name }} ({{ u.email }})
+                            </option>
+                            {% endfor %}
+
+                        </select>
+                    </div>
+                    {% endif %}
+
+                    <form method="POST">
+
+                        <div class="form-section">
+                            <div class="section-title">PROFILE</div>
+
+                            <div class="row g-2">
+
+                                <div class="col-md-6">
+                                    <input class="form-control" name="full_name"
+                                           value="{{ user.full_name }}"
+                                           placeholder="Full name">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input class="form-control" name="email"
+                                           value="{{ user.email }}"
+                                           placeholder="Email">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input class="form-control" name="phone"
+                                           value="{{ user.phone or '' }}"
+                                           placeholder="Phone">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="role-badge
+                                        {% if user.role == 'admin' %}role-admin
+                                        {% elif user.role == 'speaker' %}role-speaker
+                                        {% elif user.role == 'clerk' %}role-clerk
+                                        {% else %}role-user{% endif %}">
+                                        {{ user.role|title }}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <a href="{{ url_for('appointments.dashboard') }}"
+                               class="btn btn-outline-secondary">
+                                Back
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Save
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

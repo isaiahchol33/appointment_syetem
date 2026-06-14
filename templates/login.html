@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* ===========================
+   BACKGROUND
+=========================== */
+.login-wrapper {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top, #e0e7ff, #f8fafc);
+    padding: 20px;
+}
+
+/* ===========================
+   CARD (GLASS + PREMIUM)
+=========================== */
+.login-card {
+    width: 100%;
+    max-width: 430px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.12);
+    padding: 42px 34px;
+    border: 1px solid rgba(255,255,255,0.4);
+    transition: 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-2px);
+}
+
+/* ===========================
+   ICON + HEADER
+=========================== */
+.login-icon {
+    font-size: 44px;
+    color: #2563eb;
+    margin-bottom: 8px;
+}
+
+.login-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.login-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* ===========================
+   INPUT FIELDS
+=========================== */
+.form-floating > .form-control {
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    padding: 14px;
+    font-size: 14px;
+    background: #fff;
+}
+
+.form-floating > label {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+}
+
+/* ===========================
+   BUTTON
+=========================== */
+.btn-login {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border: none;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(37,99,235,0.25);
+}
+
+/* ===========================
+   LINKS
+=========================== */
+.login-footer {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.login-footer a {
+    text-decoration: none;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ===========================
+   SMALL UX DETAILS
+=========================== */
+.small-text {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+a.small-link {
+    font-size: 12px;
+    color: #2563eb;
+    text-decoration: none;
+}
+
+a.small-link:hover {
+    text-decoration: underline;
+}
+</style>
+
+<div class="login-wrapper">
+
+    <div class="login-card">
+
+        <!-- HEADER -->
+        <div class="text-center mb-4">
+
+            <div class="login-icon">
+                <i class="bi bi-shield-lock-fill"></i>
+            </div>
+
+            <div class="login-title">Welcome Back</div>
+
+            <div class="login-subtitle">
+                Sign in to your Appointment Booking System
+            </div>
+
+        </div>
+
+        <!-- FORM -->
+        <form method="POST">
+
+            {{ form.hidden_tag() }}
+
+            <!-- EMAIL -->
+            <div class="form-floating mb-3">
+                {{ form.email(class="form-control", placeholder="Email") }}
+                {{ form.email.label }}
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="form-floating mb-3">
+                {{ form.password(class="form-control", placeholder="Password") }}
+                {{ form.password.label }}
+            </div>
+
+            <!-- OPTIONS -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <div class="form-check">
+                    {{ form.remember(class="form-check-input") }}
+                    <label class="form-check-label small-text">
+                        Remember me
+                    </label>
+                </div>
+
+                <a href="#" class="small-link">
+                    Forgot password?
+                </a>
+
+            </div>
+
+            <!-- BUTTON -->
+            <div class="d-grid">
+                {{ form.submit(class="btn btn-login text-white") }}
+            </div>
+
+        </form>
+
+        <!-- FOOTER -->
+        <div class="text-center mt-4 login-footer">
+            Don’t have an account?
+            <a href="{{ url_for('auth.register') }}">Create account</a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

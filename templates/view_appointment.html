@@ -1,0 +1,496 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<style>
+
+/* =========================
+   GLOBAL
+========================= */
+body{
+    font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    background:#f1f5f9;
+}
+
+/* =========================
+   CARD
+========================= */
+.card{
+    border:none;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 4px 16px rgba(15,23,42,.08);
+}
+
+/* HEADER */
+.card-header{
+    background:#0b1f3a !important;
+    color:#fff;
+    padding:10px 16px;
+    min-height:52px;
+}
+
+.card-title-text{
+    font-size:14px;
+    font-weight:600;
+}
+
+/* BODY */
+.card-body{
+    padding:14px 16px;
+}
+
+/* =========================
+   TABLE (COMPACT LABEL SPACING FIXED)
+========================= */
+.table{
+    margin-bottom:0;
+    font-size:13px;
+    border-collapse:collapse;
+}
+
+.table tbody tr{
+    border-bottom:1px solid #eef2f7;
+}
+
+.table tbody tr:last-child{
+    border-bottom:none;
+}
+
+/* LABELS (TH) — REDUCED SPACE */
+.table th{
+    width:20%;
+    background:none;
+    color:#64748b;
+    font-size:11.8px;
+    font-weight:600;
+
+    padding:5px 4px;      /* 🔥 tighter spacing */
+    line-height:1.2;      /* 🔥 compact height */
+    vertical-align:top;
+
+    white-space:nowrap;
+}
+
+/* VALUES (TD) — REDUCED GAP */
+.table td{
+    color:#1e293b;
+    font-size:13px;
+    font-weight:500;
+
+    padding:5px 4px;      /* 🔥 tighter spacing */
+    line-height:1.2;      /* 🔥 compact height */
+}
+
+/* =========================
+   BADGES
+========================= */
+.status-badge{
+    padding:4px 10px;
+    font-size:11px;
+    font-weight:600;
+    border-radius:30px;
+}
+
+.badge{
+    padding:6px 10px;
+    font-size:11px;
+    border-radius:30px;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+.actions{
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px solid #eef2f7;
+    gap:6px;
+}
+
+.action-btn{
+    width:34px;
+    height:34px;
+    border:none;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    color:#fff;
+    transition:.15s ease;
+    box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+
+.action-btn:hover{
+    transform:translateY(-1px);
+    opacity:.95;
+}
+
+/* COLORS */
+.btn-back{ background:#64748b; }
+.btn-edit{ background:#2563eb; }
+.btn-approve{ background:#16a34a; }
+.btn-reject{ background:#dc2626; }
+.btn-delete{ background:#991b1b; }
+.btn-pdf{ background:#0284c7; }
+
+/* FORM */
+.status-form{
+    display:inline-flex;
+    margin:0;
+}
+
+/* MOBILE */
+@media (max-width:768px){
+
+    .card-body{ padding:12px; }
+
+    .table th{
+        width:32%;
+        font-size:11px;
+        padding:4px 2px;
+    }
+
+    .table td{
+        font-size:12.5px;
+        padding:4px 2px;
+    }
+
+    .action-btn{
+        width:32px;
+        height:32px;
+        font-size:13px;
+    }
+}
+
+</style>
+<div class="container py-3">
+  <div class="card">
+
+    <!-- Header -->
+    <div class="card-header d-flex justify-content-between align-items-center">
+
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-calendar-check"></i>
+        <span class="card-title-text">Appointment Details</span>
+      </div>
+
+      {% if appointment.status == "Approved" %}
+        <span class="status-badge bg-success">Approved</span>
+      {% elif appointment.status == "Rejected" %}
+        <span class="status-badge bg-danger">Rejected</span>
+      {% else %}
+        <span class="status-badge bg-warning text-dark">Pending</span>
+      {% endif %}
+
+    </div>
+
+    <!-- Body -->
+    <div class="card-body">
+
+      <table class="table table-borderless align-middle">
+        <tbody>
+          <tr><th>Name</th><td>{{ appointment.guest_name or "—" }}</td></tr>
+          <tr><th>Email</th><td>{{ appointment.email or "—" }}</td></tr>
+          <tr><th>Phone</th><td>{{ appointment.phone or "—" }}</td></tr>
+          <tr><th>Institution</th><td>{{ appointment.institution or "—" }}</td></tr>
+          <tr><th>Service</th><td>{{ appointment.service or "—" }}</td></tr>
+          <tr><th>Purpose</th><td>{{ appointment.purpose or "—" }}</td></tr>
+
+          <tr>
+            <th>Date</th>
+            <td>
+              {{ appointment.appointment_date.strftime("%d %B %Y") if appointment.appointment_date else "—" }}
+            </td>
+          </tr>
+
+          <tr>
+            <th>Time</th>
+            <td>
+              {{ appointment.appointment_time.strftime("%I:%M %p") if appointment.appointment_time else "—" }}
+            </td>
+          </tr>
+
+          <tr>
+            <th>Status</th>
+            <td>
+              {% if appointment.status == "Approved" %}
+                <span class="badge bg-success">Approved</span>
+              {% elif appointment.status == "Rejected" %}
+                <span class="badge bg-danger">Rejected</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">Pending</span>
+              {% endif %}
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <!-- ================= ACTIONS ================= -->
+      <div class="d-flex flex-wrap align-items-center actions">
+
+        {# ================= SMART BACK LOGIC ================= #}
+        {% set next_url = request.args.get('next') %}
+        {% set ref = request.referrer %}
+
+        {% if next_url %}
+            {% set back_url = next_url %}
+        {% elif ref and 'calendar' in ref %}
+            {% set back_url = url_for('appointments.calendar') %}
+        {% elif ref and 'appointment' in ref %}
+            {% set back_url = url_for('appointments.appointment_list') %}
+        {% else %}
+            {% set back_url = url_for('appointments.appointment_list') %}
+        {% endif %}
+
+        {# LABEL LOGIC #}
+        {% if 'calendar' in (next_url or ref or '') %}
+            {% set back_label = "Back to Calendar" %}
+        {% else %}
+            {% set back_label = "Back to List" %}
+        {% endif %}
+
+        <!-- BACK BUTTON -->
+        <a href="{{ back_url }}"
+           class="action-btn btn-back"
+           title="{{ back_label }}">
+          <i class="bi bi-arrow-left"></i>
+        </a>
+
+        {% if current_user.role == "admin" %}
+
+          {% if appointment.status != "Approved" %}
+
+            <!-- Edit -->
+            <a href="{{ url_for('appointments.edit_appointment', id=appointment.id, next=request.full_path) }}"
+               class="action-btn btn-edit"
+               title="Edit">
+              <i class="bi bi-pencil"></i>
+            </a>
+
+            <!-- Approve -->
+            <form class="status-form" data-action="approve"
+                  action="{{ url_for('appointments.approve_appointment', id=appointment.id) }}"
+                  method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="action-btn btn-approve" title="Approve">
+                <i class="bi bi-check-lg"></i>
+              </button>
+            </form>
+
+          {% endif %}
+
+          {% if appointment.status != "Rejected" %}
+
+            <!-- Reject -->
+            <form class="status-form" data-action="reject"
+                  action="{{ url_for('appointments.reject_appointment', id=appointment.id) }}"
+                  method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="action-btn btn-reject" title="Reject">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </form>
+
+          {% endif %}
+
+          <!-- Delete -->
+          <form class="status-form" data-action="delete"
+                action="{{ url_for('appointments.delete_appointment', id=appointment.id) }}"
+                method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="action-btn btn-delete" title="Delete">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+
+        {% endif %}
+
+        <!-- PDF -->
+        <a href="{{ url_for('appointments.print_appointment', id=appointment.id) }}"
+           target="_blank"
+           class="action-btn btn-pdf"
+           title="PDF">
+          <i class="bi bi-file-earmark-pdf"></i>
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    console.log("Appointment Details JS Loaded");
+
+    const forms = document.querySelectorAll(".status-form");
+
+    console.log("Forms found:", forms.length);
+
+    forms.forEach(form => {
+
+        form.addEventListener("submit", async function (e) {
+
+            e.preventDefault();
+
+            const actionType = form.dataset.action;
+            const button = form.querySelector("button");
+
+            let confirmation = true;
+
+            // =========================
+            // CONFIRMATION DIALOGS
+            // =========================
+
+            if (actionType === "approve") {
+
+                const result = await Swal.fire({
+                    icon: "question",
+                    title: "Approve Appointment?",
+                    text: "Approve this appointment?",
+                    showCancelButton: true,
+                    confirmButtonText: "Approve",
+                    cancelButtonText: "Cancel",
+                    confirmButtonColor: "#16a34a"
+                });
+
+                confirmation = result.isConfirmed;
+            }
+
+            else if (actionType === "reject") {
+
+                const result = await Swal.fire({
+                    icon: "warning",
+                    title: "Reject Appointment?",
+                    text: "Reject this appointment?",
+                    showCancelButton: true,
+                    confirmButtonText: "Reject",
+                    cancelButtonText: "Cancel",
+                    confirmButtonColor: "#dc2626"
+                });
+
+                confirmation = result.isConfirmed;
+            }
+
+            else if (actionType === "delete") {
+
+                const result = await Swal.fire({
+                    icon: "warning",
+                    title: "Delete Appointment?",
+                    text: "This action cannot be undone.",
+                    showCancelButton: true,
+                    confirmButtonText: "Delete",
+                    cancelButtonText: "Cancel",
+                    confirmButtonColor: "#dc2626"
+                });
+
+                confirmation = result.isConfirmed;
+            }
+
+            if (!confirmation) {
+                return;
+            }
+
+            button.disabled = true;
+
+            try {
+
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: new FormData(form),
+                    credentials: "same-origin",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Accept": "application/json"
+                    }
+                });
+
+                let data;
+
+                try {
+
+                    data = await response.json();
+
+                } catch {
+
+                    throw new Error(
+                        "Server returned an invalid response."
+                    );
+
+                }
+
+                console.log("Response:", data);
+
+                if (!response.ok || !data.success) {
+
+                    throw new Error(
+                        data.message || "Operation failed."
+                    );
+
+                }
+
+                await Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: data.message,
+                    timer: 1800,
+                    showConfirmButton: false
+                });
+
+                // =========================
+                // DELETE -> GO TO LIST
+                // =========================
+                if (actionType === "delete") {
+
+                    window.location.href =
+                        "{{ url_for('appointments.appointment_list') }}";
+
+                }
+
+                // =========================
+                // APPROVE / REJECT
+                // =========================
+                else {
+
+                    window.location.reload();
+
+                }
+
+            }
+
+            catch (err) {
+
+                console.error(err);
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: err.message || "Something went wrong."
+                });
+
+            }
+
+            finally {
+
+                button.disabled = false;
+
+            }
+
+        });
+
+    });
+
+});
+</script>
+
+
+{% endblock %}

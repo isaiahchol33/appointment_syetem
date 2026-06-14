@@ -1,0 +1,680 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.register-wrapper{
+    min-height:calc(100vh - 70px);
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    background:radial-gradient(circle at top,#eef2ff,#f8fafc);
+    padding:10px 16px 20px;
+}
+
+.register-card{
+    width:100%;
+    max-width:900px;
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 25px 60px rgba(0,0,0,.08);
+    padding:18px 28px;
+    transition:all .2s ease;
+}
+
+/* ===== HEADER ===== */
+.register-title{
+    text-align:center;
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:2px;
+}
+
+.register-subtitle{
+    text-align:center;
+    color:#6b7280;
+    font-size:14px;
+    margin-bottom:10px;
+}
+
+/* ===== FORM ROW ===== */
+.form-row{
+    justify-content:center;
+    align-items:center;
+    margin-bottom:6px;
+}
+
+/* ===== LABEL ===== */
+.form-label{
+    font-weight:600;
+    font-size:14px;
+    margin-bottom:0;
+    white-space:nowrap;
+    text-align:right;
+}
+
+/* ===== INPUTS ===== */
+.form-control,
+.form-select{
+    width:100%;
+    max-width:380px;
+    min-height:38px;
+    border-radius:10px;
+    padding:7px 10px;
+    font-size:14px;
+    transition:.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
+}
+
+/* ===== VALID / INVALID STATES ===== */
+.form-control.is-valid,
+.form-select.is-valid{
+    border:1.5px solid #22c55e !important;
+    box-shadow:0 0 0 3px rgba(34,197,94,.12) !important;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid{
+    border:1.5px solid #ef4444 !important;
+    box-shadow:0 0 0 3px rgba(239,68,68,.12) !important;
+}
+
+/* ===== ERROR TEXT ===== */
+.error-text{
+    color:#dc2626;
+    font-size:11px;
+    margin-top:2px;
+    min-height:14px;
+}
+
+/* ===== PASSWORD ===== */
+.password-wrapper{
+    position:relative;
+    width:100%;
+    max-width:380px;
+}
+
+.toggle-password{
+    position:absolute;
+    top:50%;
+    right:12px;
+    transform:translateY(-50%);
+    cursor:pointer;
+    color:#6b7280;
+}
+
+/* ===== STRENGTH BAR ===== */
+.strength-bar{
+    width:100%;
+    max-width:380px;
+    height:5px;
+    background:#e5e7eb;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:4px;
+}
+
+.strength-fill{
+    width:0;
+    height:100%;
+    transition:.3s;
+}
+
+#strengthText{
+    font-size:11px;
+}
+
+/* ===== BUTTON ===== */
+.btn-register{
+    width:100%;
+    max-width:380px;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    border:none;
+    border-radius:10px;
+    padding:10px;
+    font-weight:600;
+    transition:.2s ease;
+}
+
+.btn-register:hover{
+    transform:translateY(-1px);
+}
+
+/* ===== COLUMN SPACING ===== */
+.col-md-3{
+    padding-right:8px;
+}
+
+.col-md-7{
+    padding-left:8px;
+}
+
+/* ===== FOOTER LINK ===== */
+.text-center.mt-3{
+    margin-top:10px !important;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width:768px){
+
+    .register-wrapper{
+        padding:8px;
+        align-items:center;
+    }
+
+    .register-card{
+        padding:16px;
+    }
+
+    .form-label{
+        text-align:left;
+        margin-bottom:3px;
+    }
+
+    .form-control,
+    .form-select,
+    .password-wrapper,
+    .strength-bar,
+    .btn-register{
+        max-width:100%;
+    }
+}
+</style>
+
+
+<div class="register-wrapper">
+
+    <div class="register-card">
+
+        <div class="register-title">
+            Create Account
+        </div>
+        <form method="POST" id="registerForm" novalidate>
+
+            {{ form.hidden_tag() }}
+
+            <!-- FULL NAME -->
+            <div class="row gx-1 align-items-center form-row">
+                <div class="col-md-3">
+                    <label for="full_name" class="form-label">
+                        Full Name
+                    </label>
+                </div>
+
+                <div class="col-md-7">
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="full_name"
+                        name="full_name"
+                        placeholder="Enter full name"
+                        minlength="3"
+                        maxlength="100"
+                        autocomplete="name"
+                        required>
+
+                    <div class="error-text" id="nameError"></div>
+                </div>
+            </div>
+
+
+            <!-- EMAIL -->
+            <div class="row gx-1 align-items-center form-row">
+                <div class="col-md-3">
+                    <label for="email" class="form-label">
+                        Email
+                    </label>
+                </div>
+
+                <div class="col-md-7">
+                    <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        placeholder="example@email.com"
+                        maxlength="120"
+                        autocomplete="email"
+                        required>
+
+                    <div class="error-text" id="emailError"></div>
+                </div>
+            </div>
+
+
+            <!-- PHONE -->
+            <div class="row gx-1 align-items-center form-row">
+                <div class="col-md-3">
+                    <label for="phone" class="form-label">
+                        Phone
+                    </label>
+                </div>
+
+                <div class="col-md-7">
+                    <input
+                        type="tel"
+                        class="form-control"
+                        id="phone"
+                        name="phone"
+                        placeholder="+211xxxxxxxxx"
+                        pattern="^\+?[0-9]{9,15}$"
+                        maxlength="15"
+                        autocomplete="tel"
+                        required>
+
+                    <div class="error-text" id="phoneError"></div>
+                </div>
+            </div>
+
+<!-- ================= DEPARTMENT ================= -->
+<div class="row gx-1 align-items-center form-row">
+    <div class="col-md-3">
+        <label for="department" class="form-label">
+            Department
+        </label>
+    </div>
+
+    <div class="col-md-7">
+
+        <select
+            class="form-select"
+            id="department"
+            name="department"
+            required>
+
+            <option value="">Select Department</option>
+
+            <option value="Administration">Administration</option>
+             <option value="Speaker">Speaker</option>
+              <option value="D_Speaker">D_Speaker</option>
+            <option value="Finance">Finance</option>
+            <option value="Human Resources">Human Resources</option>
+            <option value="Information Technology">Information Technology</option>
+            <option value="Legal Affairs">Legal Affairs</option>
+            <option value="Parliamentary Affairs">Parliamentary Affairs</option>
+            <option value="Procurement">Procurement</option>
+            <option value="Communication">Communication</option>
+            <option value="Security">Security</option>
+
+            <option value="Other">Other</option>
+
+        </select>
+
+        <div class="error-text" id="departmentError"></div>
+
+    </div>
+</div>
+
+
+<!-- ================= ROLE ================= -->
+<div class="row gx-1 align-items-center form-row">
+    <div class="col-md-3">
+        <label for="role" class="form-label">
+            Role
+        </label>
+    </div>
+
+    <div class="col-md-7">
+
+        <select
+            class="form-select"
+            id="role"
+            name="role"
+            required>
+
+            <option value="user">User</option>
+            <!-- updated roles -->
+            <option value="speaker">Speaker</option>
+            <option value="d_speaker">D_Speaker</option>
+            <option value="clerk">Clerk</option>
+
+            <option value="mp">MP</option>
+            <option value="admin">Admin</option>
+
+        </select>
+
+        <div class="error-text" id="roleError"></div>
+
+    </div>
+</div>
+
+
+            <!-- PASSWORD -->
+            <div class="row gx-1 align-items-center form-row">
+                <div class="col-md-3">
+                    <label for="password" class="form-label">
+                        Password
+                    </label>
+                </div>
+
+                <div class="col-md-7">
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            class="form-control"
+                            id="password"
+                            name="password"
+                            minlength="8"
+                            maxlength="64"
+                            autocomplete="new-password"
+                            required>
+
+                        <span class="toggle-password">
+                            <i class="bi bi-eye" id="eye1"></i>
+                        </span>
+
+                    </div>
+
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+
+                    <small id="strengthText"></small>
+
+                    <div class="error-text" id="passwordError"></div>
+
+                </div>
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="row gx-1 align-items-center form-row">
+                <div class="col-md-3">
+                    <label for="confirm_password" class="form-label">
+                        Confirm Password
+                    </label>
+                </div>
+
+                <div class="col-md-7">
+
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="confirm_password"
+                        name="confirm_password"
+                        minlength="8"
+                        maxlength="64"
+                        autocomplete="new-password"
+                        required>
+
+                    <div class="error-text" id="confirmError"></div>
+
+                </div>
+            </div>
+
+
+            <!-- SUBMIT -->
+            <div class="row mt-3">
+                <div class="col-md-3"></div>
+
+                <div class="col-md-7">
+                    <div class="d-grid">
+
+                        {{ form.submit(
+                            class="btn btn-register text-white",
+                            value="Create Account"
+                        ) }}
+
+                    </div>
+                </div>
+            </div>
+
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="{{ url_for('auth.login') }}">
+                Already have an account?
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const password = document.getElementById("password");
+const confirm_password = document.getElementById("confirm_password");
+const email = document.getElementById("email");
+const full_name = document.getElementById("full_name");
+const phone = document.getElementById("phone");
+const department = document.getElementById("department");
+const role = document.getElementById("role");
+const eye = document.getElementById("eye1");
+
+/* =========================
+   HELPERS (VALID / INVALID)
+========================= */
+function setError(input, errorId, msg){
+    document.getElementById(errorId).innerText = msg;
+    input.classList.remove("is-valid");
+    input.classList.add("is-invalid");
+}
+
+function setValid(input, errorId){
+    document.getElementById(errorId).innerText = "";
+    input.classList.remove("is-invalid");
+    input.classList.add("is-valid");
+}
+
+/* =========================
+   AUTO CAPITALIZE NAME
+========================= */
+function capitalizeName(str){
+    return str
+        .toLowerCase()
+        .split(" ")
+        .filter(w => w.length > 0)
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+}
+
+/* =========================
+   PASSWORD TOGGLE
+========================= */
+eye.parentElement.onclick = function () {
+    if (password.type === "password") {
+        password.type = "text";
+        eye.classList.replace("bi-eye", "bi-eye-slash");
+    } else {
+        password.type = "password";
+        eye.classList.replace("bi-eye-slash", "bi-eye");
+    }
+};
+
+/* =========================
+   PASSWORD STRENGTH
+========================= */
+password.addEventListener("input", function () {
+
+    let val = this.value;
+    let score = 0;
+
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[a-z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[!@#$%^&*]/.test(val)) score++;
+
+    let percent = score * 20;
+
+    strengthFill.style.width = percent + "%";
+
+    if (percent <= 40) {
+        strengthFill.style.background = "red";
+        strengthText.innerHTML = "Weak";
+    } else if (percent <= 80) {
+        strengthFill.style.background = "orange";
+        strengthText.innerHTML = "Medium";
+    } else {
+        strengthFill.style.background = "green";
+        strengthText.innerHTML = "Strong";
+    }
+
+});
+
+/* =========================
+   FULL NAME VALIDATION + AUTO CAPITALIZE
+========================= */
+full_name.addEventListener("input", function () {
+
+    let val = this.value;
+
+    // remove digits instantly
+    if (/\d/.test(val)) {
+        val = val.replace(/\d/g, "");
+    }
+
+    // auto capitalize
+    val = capitalizeName(val);
+
+    this.value = val;
+
+    if (val.trim().length === 0) {
+        setError(this, "nameError", "Name required");
+    } else if (val.length < 3) {
+        setError(this, "nameError", "Minimum 3 characters");
+    } else {
+        setValid(this, "nameError");
+    }
+});
+
+/* =========================
+   EMAIL VALIDATION
+========================= */
+email.addEventListener("input", function () {
+
+    let val = this.value.trim();
+    let regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (val.length === 0) {
+        setError(this, "emailError", "Email required");
+    } else if (!regex.test(val)) {
+        setError(this, "emailError", "Invalid email");
+    } else {
+        setValid(this, "emailError");
+    }
+});
+
+/* =========================
+   PHONE VALIDATION
+========================= */
+phone.addEventListener("input", function () {
+
+    let val = this.value.trim();
+    let regex = /^\+?[0-9]{9,15}$/;
+
+    if (val.length === 0) {
+        setError(this, "phoneError", "Phone required");
+    } else if (!regex.test(val)) {
+        setError(this, "phoneError", "Invalid phone number");
+    } else {
+        setValid(this, "phoneError");
+    }
+});
+
+/* =========================
+   DEPARTMENT VALIDATION
+========================= */
+department.addEventListener("change", function () {
+    if (this.value === "") {
+        setError(this, "departmentError", "Select department");
+    } else {
+        setValid(this, "departmentError");
+    }
+});
+
+/* =========================
+   ROLE VALIDATION
+========================= */
+role.addEventListener("change", function () {
+    if (this.value === "") {
+        setError(this, "roleError", "Select role");
+    } else {
+        setValid(this, "roleError");
+    }
+});
+
+/* =========================
+   PASSWORD VALIDATION
+========================= */
+password.addEventListener("input", function () {
+
+    let val = this.value;
+
+    if (val.length === 0) {
+        setError(this, "passwordError", "Password required");
+    } else if (val.length < 8) {
+        setError(this, "passwordError", "Min 8 characters");
+    } else {
+        setValid(this, "passwordError");
+    }
+
+    checkConfirm();
+});
+
+/* =========================
+   CONFIRM PASSWORD
+========================= */
+confirm_password.addEventListener("input", function () {
+    checkConfirm();
+});
+
+function checkConfirm() {
+
+    if (confirm_password.value.length === 0) {
+        setError(confirm_password, "confirmError", "Confirm password required");
+    } else if (confirm_password.value !== password.value) {
+        setError(confirm_password, "confirmError", "Passwords do not match");
+    } else {
+        setValid(confirm_password, "confirmError");
+    }
+}
+
+/* =========================
+   FORM SUBMIT VALIDATION
+========================= */
+document.getElementById("registerForm").addEventListener("submit", function (e) {
+
+    let valid = true;
+
+    if (full_name.value.trim().length < 3) valid = false;
+    if (!email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) valid = false;
+    if (phone.value.trim().length < 9) valid = false;
+    if (department.value === "") valid = false;
+    if (role.value === "") valid = false;
+    if (password.value.length < 8) valid = false;
+    if (password.value !== confirm_password.value) valid = false;
+
+    if (!valid) e.preventDefault();
+});
+
+/* =========================
+   AUTO ROLE DETECTION
+========================= */
+email.addEventListener("input", function () {
+
+    let val = this.value.toLowerCase();
+
+    if (val.includes("admin"))
+        role.value = "admin";
+    else if (val.includes("mp"))
+        role.value = "mp";
+    else if (val.includes("clerk"))
+        role.value = "clerk";
+    else if (val.includes("speaker"))
+        role.value = "speaker";
+    else
+        role.value = "user";
+
+});
+
+</script>
+
+{% endblock %}

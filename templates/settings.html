@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-3">
+
+    <div class="card shadow border-0">
+        <div class="card-header bg-light d-flex align-items-center py-2">
+            <h5 class="mb-0">
+                <i class="bi bi-gear-fill text-primary me-2"></i>
+                Settings
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <div class="row g-3">
+
+                <!-- First Row -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100 text-center border-0">
+                        <div class="card-body py-3">
+                            <i class="bi bi-download text-success fs-3"></i>
+                            <h6 class="mt-2">Backup</h6>
+                            <p class="text-muted small">Save database copy.</p>
+                            <button class="btn btn-outline-success btn-sm w-100 rounded-pill" 
+                                    data-bs-toggle="modal" data-bs-target="#backupModal">
+                                <i class="bi bi-download me-1"></i> Backup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100 text-center border-0">
+                        <div class="card-body py-3">
+                            <i class="bi bi-upload text-danger fs-3"></i>
+                            <h6 class="mt-2">Restore</h6>
+                            <p class="text-muted small">Load backup file.</p>
+                            <button class="btn btn-outline-danger btn-sm w-100 rounded-pill" 
+                                    data-bs-toggle="modal" data-bs-target="#restoreModal">
+                                <i class="bi bi-upload me-1"></i> Restore
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Second Row -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100 text-center border-0">
+                        <div class="card-body py-3">
+                            <i class="bi bi-envelope-fill text-primary fs-3"></i>
+                            <h6 class="mt-2">Email</h6>
+                            <p class="text-muted small">SMTP setup.</p>
+                            <button class="btn btn-outline-primary btn-sm w-100 rounded-pill" 
+                                    data-bs-toggle="modal" data-bs-target="#emailModal">
+                                <i class="bi bi-envelope-fill me-1"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100 text-center border-0">
+                        <div class="card-body py-3">
+                            <i class="bi bi-cpu-fill text-dark fs-3"></i>
+                            <h6 class="mt-2">System</h6>
+                            <p class="text-muted small">Alerts & backup.</p>
+                            <button class="btn btn-outline-dark btn-sm w-100 rounded-pill" 
+                                    data-bs-toggle="modal" data-bs-target="#systemModal">
+                                <i class="bi bi-cpu-fill me-1"></i> Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup Modal -->
+<div class="modal fade" id="backupModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header py-2">
+                <h6 class="modal-title">Backup</h6>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <a href="{{ url_for('settings.backup_database') }}" 
+                   class="btn btn-outline-success btn-sm w-100 rounded-pill">
+                    <i class="bi bi-download me-1"></i> Save Copy
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Restore Modal -->
+<div class="modal fade" id="restoreModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow-lg border-0">
+            <form method="POST" action="{{ url_for('settings.restore_database') }}" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header py-2">
+                    <h6 class="modal-title">Restore</h6>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="file" name="backup_file" class="form-control form-control-sm" required>
+                </div>
+                <div class="modal-footer py-2">
+                    <button class="btn btn-outline-danger btn-sm w-100 rounded-pill">
+                        <i class="bi bi-upload me-1"></i> Load
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Email Modal -->
+<div class="modal fade" id="emailModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow-lg border-0">
+            <form method="POST" action="{{ url_for('settings.save_email_settings') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header py-2">
+                    <h6 class="modal-title">Email</h6>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control form-control-sm mb-2" name="smtp_server" placeholder="SMTP Server">
+                    <input class="form-control form-control-sm mb-2" name="smtp_port" value="587" placeholder="Port">
+                    <input class="form-control form-control-sm mb-2" name="email_address" placeholder="Email">
+                    <input class="form-control form-control-sm mb-2" type="password" name="password" placeholder="Password">
+                </div>
+                <div class="modal-footer py-2">
+                    <button class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                        <i class="bi bi-save me-1"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- System Modal -->
+<div class="modal fade" id="systemModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content shadow-lg border-0">
+            <form method="POST" action="{{ url_for('settings.save_system_settings') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="modal-header py-2">
+                    <h6 class="modal-title">System</h6>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" name="notifications">
+                        <label class="form-check-label small">Notifications</label>
+                    </div>
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" name="email_alerts">
+                        <label class="form-check-label small">Email Alerts</label>
+                    </div>
+                    <div class="form-check mb-1">
+                        <input class="form-check-input" type="checkbox" name="auto_backup">
+                        <label class="form-check-label small">Auto Backup</label>
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button class="btn btn-outline-dark btn-sm w-100 rounded-pill">
+                        <i class="bi bi-save me-1"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

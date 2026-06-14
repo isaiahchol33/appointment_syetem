@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+
+
+<div class="app-card">
+
+    <!-- HEADER -->
+    <div class="app-header compact">
+        <div class="icon">
+            <i class="bi bi-building"></i>
+        </div>
+
+        <div class="header-text">
+            <small>Appointment Scheduling </small>
+        </div>
+    </div>
+
+    <div class="app-body">
+
+        <form id="appointmentForm" method="POST" action="{{ url_for('appointments.book_appointment') }}">
+            {{ form.hidden_tag() }}
+
+            <div class="grid-2">
+                <div class="field">
+                    <label>Full Name (Applicant)</label>
+                    {{ form.guest_name(class="input") }}
+                </div>
+
+                <div class="field">
+                    <label>Email Address</label>
+                    {{ form.email(class="input") }}
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="field">
+                    <label>Contact Phone Number</label>
+                    {{ form.phone(class="input") }}
+                </div>
+
+                <div class="field">
+                    <label>Institution / Organization</label>
+                    <select id="institution" name="institution" class="input">
+                        <option value="">Select Institution</option>
+                        <option value="tnla">TNLA</option>
+                        <option value="min_agriculture">Ministry of Agriculture</option>
+                        <option value="min_education">Ministry of Education</option>
+                        <option value="min_health">Ministry of Health</option>
+                        <option value="min_finance">Ministry of Finance</option>
+                        <option value="min_interior">Ministry of Interior</option>
+                        <option value="min_defense">Ministry of Defense</option>
+                        <option value="min_foreign">Ministry of Foreign Affairs</option>
+                        <option value="Ministry_justice">Ministry of Justice</option>
+                        <option value="Ministry_transport">Ministry of Transport</option>
+                        <option value="Ministry_energy">Ministry of Energy</option>
+                        <option value="Ministry_water">Ministry of Water</option>
+                        <option value="Ministry_information">Ministry of ICT</option>
+                        <option value="Ministry_labor">Ministry of Labor</option>
+                        <option value="Ministry_land">Ministry of Land</option>
+                        <option value="Ministry_localgov">Ministry of Local Government</option>
+                        <option value="Ministry_environment">Ministry of Environment</option>
+                        <option value="Ministry_youth">Ministry of Youth</option>
+                        <option value="Other">Other (Specify)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="otherBox" class="field hidden">
+                <label>Specify Institution Name</label>
+                <input type="text" id="other_institution" class="input">
+            </div>
+
+            <div class="field">
+                <label>Requested Service Type</label>
+                <select id="service" name="service" class="input">
+                    <option value="">Select Service</option>
+                    <option value="speaker_consultation">Speaker Consultation</option>
+                    <option value="public">Public Policy</option>
+                    <option value="committee_review">Committee Review</option>
+                    <option value="official_delegation">Official Delegation</option>
+                    <option value="other">Other (Specify)</option>
+                </select>
+            </div>
+
+            <div id="otherServiceBox" class="field hidden">
+                <label>Specify Service Type</label>
+                <input type="text" id="other_service" class="input">
+            </div>
+
+            <div class="field hidden" id="purposeBox">
+                <label>Purpose / Agenda of Appointment</label>
+                {{ form.purpose(class="input") }}
+            </div>
+
+            <div class="field">
+                <label>Preferred Appointment Date</label>
+                {{ form.appointment_date(class="input", id="date") }}
+            </div>
+
+            <!-- TIME -->
+            <div class="field">
+                <label>Preferred Appointment Time</label>
+
+                <div class="time-card time-row">
+
+                    <select id="hour" class="time-select">
+                        {% for i in range(1,13) %}
+                            <option value="{{ i }}">{{ i }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <span class="time-sep">:</span>
+
+                    <select id="minute" class="time-select">
+                        <option value="00">00</option>
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                    </select>
+
+                    <div class="ampm-box">
+                        <button type="button" class="ampm-btn active" id="amBtn">AM</button>
+                        <button type="button" class="ampm-btn" id="pmBtn">PM</button>
+                    </div>
+
+                </div>
+
+                <input type="hidden" name="appointment_time" id="time">
+            </div>
+
+            <div class="actions">
+                <button type="reset" class="btn ghost">Reset Form</button>
+                <button type="submit" class="btn primary" id="submitBtn">Submit Request</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const form = document.getElementById("appointmentForm");
+
+    const institution = document.getElementById("institution");
+    const otherBox = document.getElementById("otherBox");
+    const otherInstitution = document.getElementById("other_institution");
+
+    const service = document.getElementById("service");
+    const otherServiceBox = document.getElementById("otherServiceBox");
+    const otherService = document.getElementById("other_service");
+
+    const purposeBox = document.getElementById("purposeBox");
+
+    const hourField = document.getElementById("hour");
+    const minuteField = document.getElementById("minute");
+    const timeField = document.getElementById("time");
+
+    const amBtn = document.getElementById("amBtn");
+    const pmBtn = document.getElementById("pmBtn");
+
+    const submitBtn = document.getElementById("submitBtn");
+
+    let period = "AM";
+
+    flatpickr("#date", {
+        minDate: "today",
+        dateFormat: "Y-m-d",
+        disableMobile: true
+    });
+
+    function updateTime() {
+        let h = parseInt(hourField.value);
+        let m = minuteField.value;
+
+        if (period === "PM" && h !== 12) h += 12;
+        if (period === "AM" && h === 12) h = 0;
+
+        timeField.value = `${String(h).padStart(2,"0")}:${m}`;
+    }
+
+    amBtn.onclick = () => {
+        period = "AM";
+        amBtn.classList.add("active");
+        pmBtn.classList.remove("active");
+        updateTime();
+    };
+
+    pmBtn.onclick = () => {
+        period = "PM";
+        pmBtn.classList.add("active");
+        amBtn.classList.remove("active");
+        updateTime();
+    };
+
+    institution.addEventListener("change", () => {
+        otherBox.classList.toggle("hidden", institution.value !== "other");
+    });
+
+    service.addEventListener("change", () => {
+        otherServiceBox.classList.toggle("hidden", service.value !== "other");
+        purposeBox.classList.toggle("hidden", service.value === "");
+    });
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        updateTime();
+
+        const formData = new FormData(form);
+
+        if (institution.value === "other") {
+            formData.set("other_institution", otherInstitution.value.trim());
+        }
+
+        if (service.value === "other") {
+            formData.set("other_service", otherService.value.trim());
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Submitting Request...";
+
+        try {
+            const res = await fetch(form.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json"
+                }
+            });
+
+            const data = await res.json();
+
+            if (data.type === "slot_taken") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Time Slot Unavailable",
+                    text: data.message
+                });
+            }
+            else if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Request Submitted Successfully",
+                    text: data.message
+                });
+
+                form.reset();
+                updateTime();
+            }
+            else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Submission Failed",
+                    text: data.message || "Please try again"
+                });
+            }
+
+        } catch (err) {
+            Swal.fire({
+                icon: "error",
+                title: "System Error",
+                text: "Unable to process your request at this time"
+            });
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Request";
+    });
+
+    updateTime();
+});
+</script>
+
+<style>
+:root{
+    --primary:#1d4ed8;
+    --bg:#eef4ff;
+    --border:#e5e7eb;
+    --text:#111827;
+    --muted:#6b7280;
+}
+
+body{
+    background:var(--bg);
+}
+
+/* CARD */
+
+.app-card{
+    max-width:820px;
+    margin:20px auto;
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 12px 35px rgba(0,0,0,.08);
+    overflow:hidden;
+}
+
+.app-body{
+    padding:22px;
+}
+
+/* HEADER */
+
+.app-header.compact{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 16px;
+    background:linear-gradient(135deg,var(--primary),#0f172a);
+    color:#fff;
+}
+
+.app-header .icon{
+    width:36px;
+    height:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    background:rgba(255,255,255,.15);
+    font-size:16px;
+}
+
+.header-text small{
+    font-size:12px;
+    letter-spacing:.3px;
+    opacity:.95;
+    font-family:"Inter",sans-serif;
+}
+
+/* GRID */
+
+.grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+/* FIELDS */
+
+.field{
+    margin-bottom:14px;
+}
+
+/* LABELS */
+
+label{
+    display:block;
+    margin-bottom:6px;
+
+    font-family:"Inter",sans-serif;
+
+    /* 🔥 KEY CHANGE */
+    font-size:10.5px;        /* smaller */
+    font-weight:700;         /* bold */
+    letter-spacing:.6px;
+    text-transform:uppercase;
+
+    color:#4b5563;           /* slightly softer than black */
+}
+
+/* INPUTS */
+
+.input,
+select,
+textarea{
+    width:100%;
+    padding:11px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:#fff;
+    color:var(--text);
+    font-family:"Poppins",sans-serif;
+    font-size:13px;
+    font-weight:400;
+    transition:all .2s ease;
+}
+
+.input::placeholder,
+textarea::placeholder{
+    font-family:"Poppins",sans-serif;
+    color:#9ca3af;
+}
+
+.input:focus,
+select:focus,
+textarea:focus{
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 0 4px rgba(29,78,216,.08);
+}
+
+/* HIDDEN */
+
+.hidden{
+    display:none;
+}
+
+/* TIME CARD */
+
+.time-card{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:#f8fafc;
+}
+
+.time-row select{
+    flex:1;
+    font-family:"Poppins",sans-serif;
+}
+
+.time-select{
+    min-width:90px;
+}
+
+.time-sep{
+    font-weight:700;
+    color:#374151;
+    font-size:18px;
+}
+
+/* AM PM */
+
+.ampm-box{
+    display:flex;
+    overflow:hidden;
+    border-radius:10px;
+    border:1px solid var(--border);
+}
+
+.ampm-btn{
+    border:none;
+    padding:8px 14px;
+    background:#f3f4f6;
+    font-family:"Inter",sans-serif;
+    font-size:12px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.ampm-btn.active{
+    background:var(--primary);
+    color:#fff;
+}
+
+/* BUTTONS */
+
+.actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px;
+}
+
+.btn{
+    border:none;
+    border-radius:10px;
+    padding:10px 18px;
+    font-family:"Inter",sans-serif;
+    font-size:13px;
+    font-weight:600;
+    transition:.2s;
+}
+
+.primary{
+    background:var(--primary);
+    color:#fff;
+}
+
+.primary:hover{
+    background:#1e40af;
+}
+
+.ghost{
+    background:#f3f4f6;
+    color:#374151;
+}
+
+.ghost:hover{
+    background:#e5e7eb;
+}
+
+/* FLATPICKR */
+
+.flatpickr-input{
+    font-family:"Poppins",sans-serif !important;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+    .app-body{
+        padding:16px;
+    }
+
+    .grid-2{
+        grid-template-columns:1fr;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+    .time-card{
+        flex-wrap:wrap;
+    }
+}
+</style>
+
+{% endblock %}

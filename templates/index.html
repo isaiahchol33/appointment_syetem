@@ -1,0 +1,69 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="hero-section">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-6">
+
+                <h1 class="display-4 fw-bold mb-4">
+
+                    Office of the Speaker
+                    Appointment Booking System
+
+                </h1>
+
+                <p class="lead text-muted mb-4">
+
+                    Official platform for scheduling meetings,
+                    consultations, parliamentary discussions,
+                    and administrative appointments with
+                    the Office of the Speaker.
+
+                </p>
+
+                <div class="d-flex gap-3 flex-wrap">
+
+                    <a href="{{ url_for('auth.register') }}"
+                       class="btn btn-primary btn-lg">
+
+                        <i class="bi bi-person-plus"></i>
+                        Register
+
+                    </a>
+
+                    <a href="{{ url_for('auth.login') }}"
+                       class="btn btn-dark btn-lg">
+
+                        <i class="bi bi-box-arrow-in-right"></i>
+                        Login
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6 text-center">
+
+                <i class="bi bi-bank2"
+                   style="font-size: 15rem;
+                          color: #0d6efd;">
+
+                </i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

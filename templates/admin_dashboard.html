@@ -1,0 +1,579 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+/* =========================
+   PAGE (MODERN SaaS LOOK)
+========================= */
+body{
+    background: radial-gradient(circle at top, #eef2ff, #f8fafc);
+    color:#0f172a;
+    font-size:.80rem;
+}
+
+/* =========================
+   CARDS (GLASS SAAS STYLE)
+========================= */
+.card{
+    border:none !important;
+    border-radius:18px !important;
+    background:rgba(255,255,255,.85);
+    backdrop-filter: blur(14px);
+    box-shadow:
+        0 10px 30px rgba(15,23,42,.08),
+        inset 0 1px 0 rgba(255,255,255,.6);
+}
+
+/* =========================
+   HEADER CARD
+========================= */
+.card.border-0.shadow-sm{
+    background: linear-gradient(135deg,#ffffff,#f5f9ff) !important;
+    border-radius:16px;
+}
+
+/* =========================
+   TABLE WRAPPER
+========================= */
+#appointmentsTable{
+    font-size:.74rem;
+    white-space:nowrap;
+    margin-bottom:0;
+}
+
+/* HEADER */
+#appointmentsTable thead th{
+    position:sticky;
+    top:0;
+    z-index:20;
+
+    background: linear-gradient(135deg,#f8fafc,#eef2ff);
+    color:#475569;
+
+    font-size:.66rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+
+    border-bottom:1px solid #e2e8f0;
+    padding:11px 12px;
+}
+
+/* ROWS */
+#appointmentsTable td{
+    padding:11px 12px;
+    vertical-align:middle;
+    border-color:#edf2f7;
+    font-size:.73rem;
+}
+
+#appointmentsTable tbody tr{
+    cursor:pointer;
+    transition:.18s ease;
+}
+
+#appointmentsTable tbody tr:nth-child(even){
+    background:#fbfcfe;
+}
+
+#appointmentsTable tbody tr:hover{
+    background: linear-gradient(90deg,#eef6ff,#f8fbff) !important;
+    box-shadow: inset 3px 0 0 #2563eb;
+    transform: scale(1.001);
+}
+
+/* =========================
+   GUEST INFO
+========================= */
+.guest-name{
+    font-size:.78rem;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.guest-email{
+    font-size:.63rem;
+    color:#94a3b8;
+}
+
+/* =========================
+   SERVICE BADGE (SOFTER)
+========================= */
+.service-badge{
+    background: linear-gradient(135deg,#eef2ff,#e0e7ff);
+    color:#3730a3;
+
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:.64rem;
+    font-weight:600;
+
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+}
+
+/* =========================
+   STATUS (MODERN PILLS)
+========================= */
+.status-approved,
+.status-pending,
+.status-rejected{
+    padding:5px 10px;
+    border-radius:999px;
+    font-size:.63rem;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+}
+
+.status-approved{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.status-pending{
+    background:#fef9c3;
+    color:#854d0e;
+}
+
+.status-rejected{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* =========================
+   ACTION BUTTONS (SOFT ICONS)
+========================= */
+.action-btn{
+    width:30px;
+    height:30px;
+    border:none;
+    background:rgba(241,245,249,.6);
+    border-radius:10px;
+    color:#64748b;
+    font-size:.8rem;
+    transition:.2s ease;
+}
+
+.action-btn:hover{
+    background:#e0e7ff;
+    color:#2563eb;
+    transform: translateY(-1px);
+}
+
+/* =========================
+   SEARCH (CLEAN GLASS INPUT)
+========================= */
+#tableSearch{
+    height:38px;
+    border:none;
+    border-radius:12px;
+    background:rgba(248,250,252,.9);
+    box-shadow:0 4px 12px rgba(0,0,0,.05);
+    font-size:.73rem;
+}
+
+#tableSearch:focus{
+    outline:none;
+    box-shadow:0 0 0 .2rem rgba(37,99,235,.15);
+}
+
+/* =========================
+   BADGE
+========================= */
+.badge{
+    font-size:.68rem;
+    padding:7px 12px;
+    border-radius:999px;
+}
+
+/* =========================
+   SMALL ACTION MENU
+========================= */
+.small-action-menu{
+    display:none;
+    position:fixed;
+    width:180px;
+    background:#fff;
+    border-radius:14px;
+    overflow:hidden;
+    z-index:9999;
+    box-shadow:0 18px 45px rgba(0,0,0,.12);
+    animation:fadeIn .15s ease;
+}
+
+.small-action-menu a{
+    display:block;
+    padding:11px 14px;
+    font-size:.72rem;
+    color:#334155;
+    text-decoration:none;
+    transition:.15s;
+}
+
+.small-action-menu a:hover{
+    background:#f1f5f9;
+}
+
+.small-action-menu .text-danger:hover{
+    background:#fee2e2;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:scale(.95);}
+    to{opacity:1; transform:scale(1);}
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+.table-responsive::-webkit-scrollbar{
+    width:7px;
+    height:7px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb{
+    background:#cbd5e1;
+    border-radius:20px;
+}
+
+.table-responsive::-webkit-scrollbar-track{
+    background:#f8fafc;
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media(max-width:768px){
+
+    body{ font-size:.72rem; }
+
+    #appointmentsTable{ font-size:.67rem; }
+
+    #appointmentsTable th,
+    #appointmentsTable td{
+        font-size:.67rem;
+        padding:8px;
+    }
+
+    .small-action-menu{
+        width:160px;
+    }
+}
+
+</style>
+
+<div class="container-fluid px-3 py-3">
+
+    <!-- HEADER -->
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+
+        <div class="card-body py-3">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+                <!-- LEFT -->
+                <div>
+                    <h6 class="fw-bold text-dark mb-0">
+                        <i class="bi bi-bank text-primary me-2"></i>
+                        Appointment Records
+                    </h6>
+                </div>
+
+                <!-- RIGHT -->
+                <div class="d-flex align-items-center gap-3 ms-auto">
+
+                    <!-- SEARCH -->
+                    <div class="position-relative">
+
+                        <i class="bi bi-search position-absolute"
+                           style="left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:.75rem;"></i>
+
+                        <input type="text"
+                               id="tableSearch"
+                               class="form-control rounded-pill ps-5"
+                               placeholder="Search guest, phone, service..."
+                               style="width:300px;height:38px;font-size:.75rem;background:#f8fafc;border:1px solid #e2e8f0;">
+                    </div>
+
+                    <!-- RECORD COUNT -->
+                    <span class="badge bg-primary shadow-sm">
+                        {{ appointments|length }} Records
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="card border-0 shadow rounded-4 overflow-hidden">
+
+        {% if appointments %}
+
+        <div class="table-responsive" style="max-height:650px;overflow:auto;">
+
+            <table id="appointmentsTable" class="table table-hover align-middle mb-0">
+
+                <thead class="sticky-top">
+                    <tr class="text-center text-muted">
+                        <th>Guest</th>
+                        <th>Phone</th>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th width="70"><i class="bi bi-gear"></i></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for appointment in appointments %}
+                    <tr onclick="openAppointment({{ appointment.id }})">
+
+                        <td>
+                            <div class="guest-name">{{ appointment.guest_name }}</div>
+                            <div class="guest-email">{{ appointment.email }}</div>
+                        </td>
+
+                        <td class="text-center small">{{ appointment.phone }}</td>
+
+                        <td class="text-center">
+                            <span class="service-badge">
+                                <i class="bi bi-briefcase"></i>
+                                {{ appointment.service }}
+                            </span>
+                        </td>
+
+                        <td class="text-center small">
+                            <i class="bi bi-calendar3 text-muted me-1"></i>
+                            {{ appointment.appointment_date }}
+                        </td>
+
+                        <td class="text-center">
+                            {% if appointment.status == 'Approved' %}
+                                <span class="status-approved">Approved</span>
+                            {% elif appointment.status == 'Rejected' %}
+                                <span class="status-rejected">Rejected</span>
+                            {% else %}
+                                <span class="status-pending">Pending</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-center">
+                            <button class="action-btn"
+                                    onclick="openActionMenu(event, {{ appointment.id }});">
+                                <i class="bi bi-three-dots-vertical"></i>
+                            </button>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox display-4 text-secondary"></i>
+            <div class="mt-3 text-muted">No appointments found</div>
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<script>
+
+const viewBase = "/view/";
+const editBase = "/edit/";
+const deleteBase = "/delete/";
+
+const actionModal = document.getElementById("actionModal");
+const viewBtn = document.getElementById("viewBtn");
+const editBtn = document.getElementById("editBtn");
+const deleteBtn = document.getElementById("deleteBtn");
+const searchInput = document.getElementById("tableSearch");
+
+
+/* =========================
+   OPEN APPOINTMENT
+========================= */
+function openAppointment(id) {
+    window.location.href = viewBase + id;
+}
+
+
+/* =========================
+   OPEN ACTION MENU
+========================= */
+function openActionMenu(id) {
+
+    if (!actionModal) return;
+
+    actionModal.style.display = "flex";
+
+    viewBtn.href = viewBase + id;
+    editBtn.href = editBase + id;
+    deleteBtn.href = deleteBase + id;
+}
+
+
+/* =========================
+   CLOSE ACTION MENU
+========================= */
+function closeActionMenu(e) {
+
+    if (e && e.target !== e.currentTarget) return;
+
+    if (actionModal) {
+        actionModal.style.display = "none";
+    }
+
+}
+
+
+/* =========================
+   ESC CLOSE
+========================= */
+document.addEventListener("keydown", function (e) {
+
+    if (e.key === "Escape" && actionModal) {
+        actionModal.style.display = "none";
+    }
+
+});
+
+
+/* =========================
+   CLICK OUTSIDE CLOSE
+========================= */
+window.addEventListener("click", function (e) {
+
+    if (e.target === actionModal) {
+        actionModal.style.display = "none";
+    }
+
+});
+
+
+/* =========================
+   SEARCH TABLE
+========================= */
+if (searchInput) {
+
+    searchInput.addEventListener("keyup", function () {
+
+        const value = this.value.toLowerCase().trim();
+
+        const rows = document.querySelectorAll(
+            "#appointmentsTable tbody tr"
+        );
+
+        let visibleCount = 0;
+
+        rows.forEach(function (row) {
+
+            const text = row.innerText.toLowerCase();
+
+            if (text.includes(value)) {
+
+                row.style.display = "";
+                visibleCount++;
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+    });
+
+}
+
+
+/* =========================
+   ENTER OPENS FIRST RESULT
+========================= */
+if (searchInput) {
+
+    searchInput.addEventListener("keydown", function (e) {
+
+        if (e.key === "Enter") {
+
+            const firstVisibleRow = Array.from(
+                document.querySelectorAll("#appointmentsTable tbody tr")
+            ).find(row => row.style.display !== "none");
+
+            if (firstVisibleRow) {
+                firstVisibleRow.click();
+            }
+
+        }
+
+    });
+
+}
+
+
+/* =========================
+   ROW HOVER EFFECT
+========================= */
+document.querySelectorAll("#appointmentsTable tbody tr")
+.forEach(function (row) {
+
+    row.addEventListener("mouseenter", function () {
+
+        this.style.transition = ".15s";
+        this.style.backgroundColor = "#edf5ff";
+
+    });
+
+    row.addEventListener("mouseleave", function () {
+
+        this.style.backgroundColor = "";
+
+    });
+
+});
+
+
+/* =========================
+   DOUBLE CLICK OPENS RECORD
+========================= */
+document.querySelectorAll("#appointmentsTable tbody tr")
+.forEach(function (row) {
+
+    row.addEventListener("dblclick", function () {
+
+        this.click();
+
+    });
+
+});
+
+
+/* =========================
+   AUTO FOCUS SEARCH
+========================= */
+window.addEventListener("load", function () {
+
+    if (searchInput && window.innerWidth > 768) {
+        searchInput.focus();
+    }
+
+});
+
+</script>
+{% endblock %}

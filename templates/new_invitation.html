@@ -1,0 +1,895 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+:root{
+    --primary:#4f46e5;
+    --primary-dark:#3730a3;
+    --accent:#06b6d4;
+    --success:#10b981;
+    --danger:#ef4444;
+    --text:#0f172a;
+    --muted:#64748b;
+    --border:#e2e8f0;
+    --bg:#f8fafc;
+    --white:#ffffff;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+}
+
+.invitation-container{
+    max-width:1100px;
+    margin:auto;
+}
+
+/* =====================================
+   HERO HEADER
+===================================== */
+
+.hero-banner{
+    position:relative;
+    overflow:hidden;
+    border-radius:14px;
+    padding:10px 16px;
+    margin-bottom:12px;
+    background:linear-gradient(
+        135deg,
+        #4f46e5,
+        #4338ca,
+        #06b6d4
+    );
+    color:#fff;
+    box-shadow:0 6px 18px rgba(79,70,229,.12);
+}
+
+.hero-banner::before{
+    content:'';
+    position:absolute;
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background:rgba(255,255,255,.08);
+    right:-35px;
+    top:-35px;
+}
+
+.hero-banner::after{
+    content:'';
+    position:absolute;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:rgba(255,255,255,.05);
+    left:-15px;
+    bottom:-15px;
+}
+
+.hero-content{
+    position:relative;
+    z-index:2;
+}
+
+.hero-icon{
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,255,255,.15);
+    backdrop-filter:blur(10px);
+    font-size:.9rem;
+}
+
+.hero-title{
+    margin:0;
+    font-size:1rem;
+    font-weight:700;
+    line-height:1.1;
+}
+
+.hero-subtitle{
+    margin-top:2px;
+    font-size:.72rem;
+    opacity:.9;
+}
+
+/* =====================================
+   CARDS
+===================================== */
+
+.form-card{
+    background:#fff;
+    border:none;
+    border-radius:16px;
+    margin-bottom:14px;
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(15,23,42,.05);
+    transition:.25s ease;
+}
+
+.form-card:hover{
+    transform:translateY(-1px);
+}
+
+.card-header-modern{
+    padding:12px 16px;
+    border-bottom:1px solid #eef2f7;
+    background:#fff;
+}
+
+.card-header-modern h5{
+    margin:0;
+    font-size:.92rem;
+    font-weight:700;
+    color:var(--text);
+}
+
+.card-header-modern p{
+    margin:3px 0 0;
+    font-size:.75rem;
+    color:var(--muted);
+}
+
+.card-body-modern{
+    padding:16px;
+}
+
+/* =====================================
+   LABELS
+===================================== */
+
+.form-label{
+    display:block;
+    font-size:.84rem;
+    font-weight:600;
+    color:var(--text);
+    margin-bottom:6px;
+}
+
+.required{
+    color:var(--danger);
+}
+
+/* =====================================
+   INPUTS
+===================================== */
+
+.form-control,
+.form-select{
+    height:42px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    font-size:.9rem;
+    transition:.2s ease;
+}
+
+.form-control:hover,
+.form-select:hover{
+    border-color:#cbd5e1;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(79,70,229,.10);
+}
+
+textarea.form-control{
+    min-height:180px;
+    height:180px;
+    resize:vertical;
+    line-height:1.6;
+    padding-top:10px;
+}
+
+/* =====================================
+   INPUT ICONS
+===================================== */
+
+.input-icon{
+    position:relative;
+}
+
+.input-icon i{
+    position:absolute;
+    left:12px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#94a3b8;
+    font-size:.85rem;
+    z-index:2;
+}
+
+.input-icon .form-control{
+    padding-left:38px;
+}
+
+/* =====================================
+   FORM ERRORS
+===================================== */
+
+.text-danger.small{
+    font-size:.75rem;
+    margin-top:4px;
+}
+
+/* =====================================
+   CHARACTER COUNTER
+===================================== */
+
+.counter{
+    margin-top:6px;
+    text-align:right;
+    color:var(--muted);
+    font-size:.72rem;
+}
+
+/* =====================================
+   BUTTONS
+===================================== */
+
+.btn-save{
+    border:none;
+    color:#fff;
+    font-size:.88rem;
+    font-weight:600;
+    padding:8px 18px;
+    border-radius:10px;
+    background:linear-gradient(
+        135deg,
+        #4f46e5,
+        #06b6d4
+    );
+    transition:.2s ease;
+}
+
+.btn-save:hover{
+    color:#fff;
+    transform:translateY(-1px);
+    box-shadow:0 6px 15px rgba(79,70,229,.18);
+}
+
+.btn-preview{
+    border-radius:10px;
+    padding:8px 18px;
+    font-size:.88rem;
+}
+
+.btn-outline-secondary,
+.btn-outline-primary{
+    border-radius:10px;
+}
+
+/* =====================================
+   ACTION BAR
+===================================== */
+
+.action-bar{
+    position:sticky;
+    bottom:10px;
+    z-index:50;
+    margin-top:14px;
+    padding:10px 14px;
+    border-radius:12px;
+    background:#fff;
+    box-shadow:0 6px 18px rgba(15,23,42,.08);
+}
+
+/* =====================================
+   PREVIEW MODAL
+===================================== */
+
+.modal-dialog{
+    max-width:650px;
+}
+
+.preview-modal{
+    border:none;
+    border-radius:16px;
+    overflow:hidden;
+}
+
+.preview-modal .modal-header{
+    background:linear-gradient(
+        135deg,
+        #4f46e5,
+        #06b6d4
+    );
+    color:#fff;
+    border:none;
+}
+
+.preview-modal .modal-title{
+    font-size:1rem;
+    font-weight:600;
+}
+
+.preview-modal .btn-close{
+    filter:invert(1);
+}
+
+.preview-modal .modal-body{
+    padding:18px;
+    max-height:65vh;
+    overflow-y:auto;
+}
+
+.preview-item{
+    margin-bottom:14px;
+}
+
+.preview-item:last-child{
+    margin-bottom:0;
+}
+
+.preview-item label{
+    display:block;
+    font-size:.72rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:var(--muted);
+    margin-bottom:4px;
+}
+
+.preview-message{
+    white-space:pre-wrap;
+    background:#f8fafc;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px;
+    min-height:120px;
+}
+
+.preview-modal .modal-footer{
+    border-top:1px solid #eef2f7;
+}
+
+/* =====================================
+   UTILITIES
+===================================== */
+
+.row.g-2{
+    --bs-gutter-x:.75rem;
+    --bs-gutter-y:.75rem;
+}
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media (max-width:768px){
+
+    .hero-banner{
+        padding:10px 12px;
+    }
+
+    .hero-icon{
+        width:30px;
+        height:30px;
+        font-size:.8rem;
+    }
+
+    .hero-title{
+        font-size:.9rem;
+    }
+
+    .card-body-modern{
+        padding:14px;
+    }
+
+    .action-bar{
+        padding:10px;
+    }
+
+    .btn-save,
+    .btn-preview,
+    .btn-outline-secondary{
+        width:100%;
+    }
+
+    .modal-dialog{
+        max-width:95%;
+        margin:auto;
+    }
+}
+</style>
+<div class="container-fluid py-2">
+
+    <div class="invitation-container">
+
+        <!-- HERO -->
+        <div class="hero-banner">
+
+            <div class="hero-content">
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                    <div class="d-flex align-items-center gap-2">
+
+                        <div class="hero-icon">
+                            <i class="bi bi-envelope-paper-fill"></i>
+                        </div>
+
+                        <div>
+
+                            <h3 class="hero-title mb-0">
+                                {% if invite %}
+                                    Edit Invitation
+                                {% else %}
+                                    Create Invitation
+                                {% endif %}
+                            </h3>
+
+                          
+
+                        </div>
+
+                    </div>
+
+                    <a href="{{ url_for('appointments.invitations') }}"
+                       class="btn btn-light btn-sm shadow-sm">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Back
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <form method="POST" novalidate>
+
+            {{ form.hidden_tag() }}
+
+            <!-- BASIC INFO -->
+            <div class="form-card">
+
+                <div class="card-header-modern">
+                    <h5 class="mb-0">
+                        📋 Basic Information
+                    </h5>
+                </div>
+
+                <div class="card-body-modern">
+
+                    <div class="row g-3">
+
+                        <!-- Sender -->
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Sender Name
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="input-icon">
+
+                                <i class="bi bi-person-badge"></i>
+
+                                {{ form.sender(
+                                    class="form-control",
+                                    id="senderField",
+                                    placeholder="Enter sender name"
+                                ) }}
+
+                            </div>
+
+                            {% if form.sender.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.sender.errors[0] }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <!-- Recipient -->
+                        <div class="col-md-6">
+
+                            <label class="form-label">
+                                Recipient Email
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="input-icon">
+
+                                <i class="bi bi-envelope"></i>
+
+                                {{ form.recipient(
+                                    class="form-control",
+                                    id="recipientField",
+                                    placeholder="recipient@example.com"
+                                ) }}
+
+                            </div>
+
+                            {% if form.recipient.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.recipient.errors[0] }}
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                    <!-- Subject -->
+                    <div class="mt-3">
+
+                        <label class="form-label">
+                            Subject
+                            <span class="required">*</span>
+                        </label>
+
+                        {{ form.subject(
+                            class="form-control",
+                            id="subjectField",
+                            placeholder="Invitation subject"
+                        ) }}
+
+                        {% if form.subject.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.subject.errors[0] }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- SCHEDULE -->
+            <div class="form-card">
+
+                <div class="card-header-modern">
+                    <h5 class="mb-0">
+                        📅 Schedule Information
+                    </h5>
+                </div>
+
+                <div class="card-body-modern">
+
+                    <label class="form-label">
+                        Invitation Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="invitationDate"
+                        name="invitation_date"
+                        class="form-control"
+                        value="{{ today_date }}">
+
+                </div>
+
+            </div>
+
+            <!-- MESSAGE -->
+            <div class="form-card">
+
+                <div class="card-header-modern">
+                    <h5 class="mb-0">
+                        ✉ Invitation Content
+                    </h5>
+                </div>
+
+                <div class="card-body-modern">
+
+                    <label class="form-label">
+                        Invitation Message
+                        <span class="required">*</span>
+                    </label>
+
+                    {{ form.message(
+                        class="form-control",
+                        id="messageBox",
+                        placeholder="Write your invitation message here..."
+                    ) }}
+
+                    {% if form.message.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.message.errors[0] }}
+                        </div>
+                    {% endif %}
+
+                    <div class="counter">
+                        <span id="charCount">0</span> characters
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ACTION BAR -->
+            <div class="action-bar">
+
+                <div class="d-flex justify-content-end align-items-center gap-2 flex-wrap">
+
+                    <a href="{{ url_for('appointments.invitations') }}"
+                       class="btn btn-outline-secondary">
+
+                        <i class="bi bi-x-circle me-1"></i>
+                        Cancel
+
+                    </a>
+
+                    <button type="button"
+                            class="btn btn-outline-primary btn-preview"
+                            onclick="showPreview()">
+
+                        <i class="bi bi-eye me-1"></i>
+                        Preview
+
+                    </button>
+
+                    <button type="submit"
+                            class="btn-save">
+
+                        <i class="bi bi-check-circle me-1"></i>
+
+                        {% if invite %}
+                            Update Invitation
+                        {% else %}
+                            Save Invitation
+                        {% endif %}
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- PREVIEW MODAL -->
+<div class="modal fade"
+     id="previewModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header bg-primary text-white">
+
+                <h5 class="modal-title">
+                    <i class="bi bi-eye me-2"></i>
+                    Invitation Preview
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <small class="text-muted">Sender</small>
+                    <div id="previewSender" class="fw-semibold"></div>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted">Recipient</small>
+                    <div id="previewRecipient" class="fw-semibold"></div>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted">Subject</small>
+                    <div id="previewSubject" class="fw-semibold"></div>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted">Date</small>
+                    <div id="previewDate" class="fw-semibold"></div>
+                </div>
+
+                <hr>
+
+                <h6 class="fw-bold mb-3">
+                    Invitation Message
+                </h6>
+
+                <div id="previewMessage"
+                     class="border rounded p-3 bg-light"
+                     style="white-space:pre-wrap; min-height:120px;">
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const textarea = document.getElementById('messageBox');
+    const counter = document.getElementById('charCount');
+
+    /* ==========================
+       CHARACTER COUNTER
+    ========================== */
+
+    function updateCount() {
+        if (!textarea || !counter) return;
+
+        counter.textContent = textarea.value.length;
+    }
+
+    /* ==========================
+       AUTO RESIZE TEXTAREA
+    ========================== */
+
+    function autoResize() {
+        if (!textarea) return;
+
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    if (textarea) {
+        textarea.addEventListener('input', () => {
+            updateCount();
+            autoResize();
+        });
+
+        updateCount();
+        autoResize();
+    }
+
+});
+
+
+/* ==========================
+   PREVIEW MODAL
+========================== */
+
+function showPreview() {
+
+    const sender =
+        document.querySelector('[name="sender"]')?.value?.trim() || '';
+
+    const recipient =
+        document.querySelector('[name="recipient"]')?.value?.trim() || '';
+
+    const subject =
+        document.querySelector('[name="subject"]')?.value?.trim() || '';
+
+    const message =
+        document.getElementById('messageBox')?.value?.trim() || '';
+
+    const date =
+        document.querySelector('[name="invitation_date"]')?.value || '';
+
+    const senderField =
+        document.getElementById('previewSender');
+
+    const recipientField =
+        document.getElementById('previewRecipient');
+
+    const subjectField =
+        document.getElementById('previewSubject');
+
+    const dateField =
+        document.getElementById('previewDate');
+
+    const messageField =
+        document.getElementById('previewMessage');
+
+    if (senderField) {
+        senderField.textContent =
+            sender || 'Not provided';
+    }
+
+    if (recipientField) {
+        recipientField.textContent =
+            recipient || 'Not provided';
+    }
+
+    if (subjectField) {
+        subjectField.textContent =
+            subject || 'No subject';
+    }
+
+    if (dateField) {
+
+        if (date) {
+            const formattedDate = new Date(date);
+
+            dateField.textContent =
+                formattedDate.toLocaleDateString(
+                    undefined,
+                    {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    }
+                );
+        } else {
+            dateField.textContent = 'No date selected';
+        }
+    }
+
+    if (messageField) {
+
+        const formattedMessage =
+            message.replace(/\n/g, '<br>');
+
+        messageField.innerHTML =
+            formattedMessage ||
+            '<span class="text-muted">No invitation message entered</span>';
+    }
+
+    const modalElement =
+        document.getElementById('previewModal');
+
+    if (!modalElement) {
+        console.error(
+            'Preview modal not found. Add #previewModal to page.'
+        );
+        return;
+    }
+
+    const modal =
+        bootstrap.Modal.getOrCreateInstance(
+            modalElement
+        );
+
+    modal.show();
+}
+
+
+/* ==========================
+   LIVE PREVIEW UPDATE
+========================== */
+
+document.addEventListener('input', function(e) {
+
+    if (
+        e.target.name === 'sender' ||
+        e.target.name === 'recipient' ||
+        e.target.name === 'subject' ||
+        e.target.name === 'invitation_date' ||
+        e.target.id === 'messageBox'
+    ) {
+
+        const modal =
+            document.getElementById('previewModal');
+
+        if (
+            modal &&
+            modal.classList.contains('show')
+        ) {
+            showPreview();
+        }
+    }
+});
+</script>
+
+{% endblock %}

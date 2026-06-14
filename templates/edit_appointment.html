@@ -1,0 +1,647 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+:root{
+    --primary:#1d4ed8;
+    --primary-dark:#1e40af;
+    --bg:#eef4ff;
+    --card:#ffffff;
+    --border:#e5e7eb;
+    --text:#111827;
+    --muted:#6b7280;
+    --shadow:0 15px 40px rgba(15,23,42,.08);
+}
+/* ================= BODY ================= */
+body{
+    background:
+        radial-gradient(circle at top left,#f7fbff,#eef4ff);
+    color:var(--text);
+}
+/* ================= CARD ================= */
+.app-card{
+    max-width:900px;
+    margin:24px auto;
+    background:var(--card);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    border:1px solid rgba(229,231,235,.8);
+}
+/* ================= HEADER ================= */
+.header{
+    padding:14px 20px;
+    background:linear-gradient(135deg,#2563eb,#0f172a);
+    color:#fff;
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:.3px;
+}
+/* ================= BODY ================= */
+.body{
+    padding:24px;
+}
+/* ================= GRID ================= */
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+/* ================= FIELD ================= */
+.field{
+    margin-bottom:18px;
+}
+/* ================= LABEL ================= */
+label{
+    display:block;
+    margin-bottom:7px;
+    font-size:12px;
+    font-weight:700;
+    color:#374151;
+    letter-spacing:.25px;
+}
+/* ================= INPUTS ================= */
+input,
+select,
+textarea{
+    width:100%;
+    padding:12px 14px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#fff;
+    color:var(--text);
+    font-size:13px;
+    transition:.2s;
+}
+input:hover,
+select:hover,
+textarea:hover{
+    border-color:#cbd5e1;
+}
+input:focus,
+select:focus,
+textarea:focus{
+    outline:none;
+    border-color:var(--primary);
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+}
+/* ================= TEXTAREA ================= */
+textarea{
+    resize:vertical;
+    min-height:100px;
+}
+/* ================= HIDDEN ================= */
+.hidden{
+    display:none;
+}
+/* ================= STATUS + PRIORITY ROW ================= */
+.status-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+/* ================= PRIORITY COLORS ================= */
+.priority-high{
+    border-left:4px solid #dc2626;
+}
+.priority-medium{
+    border-left:4px solid #d97706;
+}
+.priority-low{
+    border-left:4px solid #16a34a;
+}
+/* ================= BUTTON AREA ================= */
+.actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    margin-top:28px;
+    padding-top:18px;
+    border-top:1px solid #e5e7eb;
+}
+/* ================= BUTTONS ================= */
+.btn{
+    border:none;
+    border-radius:12px;
+    padding:11px 20px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    text-decoration:none;
+    transition:.2s ease;
+}
+/* PRIMARY */
+.primary{
+    background:linear-gradient(135deg,#2563eb,#1e40af);
+    color:#fff;
+    box-shadow:0 8px 20px rgba(37,99,235,.25);
+}
+.primary:hover{
+    transform:translateY(-1px);
+    box-shadow:0 12px 25px rgba(37,99,235,.35);
+}
+
+/* CANCEL */
+.ghost{
+    background:#f3f4f6;
+    color:#374151;
+}
+.ghost:hover{
+    background:#e5e7eb;
+}
+/* ================= TIME CARD ================= */
+.time-card{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:#f8fafc;
+}
+.time-select{
+    flex:1;
+    min-width:90px;
+}
+.time-sep{
+    font-size:18px;
+    font-weight:700;
+    color:#64748b;
+}
+/* ================= SECTION DIVIDER ================= */
+.section-title{
+    margin:18px 0 14px;
+    font-size:13px;
+    font-weight:700;
+    color:#1e293b;
+    padding-bottom:8px;
+    border-bottom:1px solid #e5e7eb;
+}
+/* ================= MOBILE ================= */
+@media (max-width:768px){
+    .app-card{
+        margin:12px;
+        border-radius:16px;
+    }
+    .body{
+        padding:18px;
+    }
+    .grid,
+    .status-row{
+        grid-template-columns:1fr;
+    }
+    .actions{
+        flex-direction:column;
+    }
+    .btn{
+        width:100%;
+    }
+    .time-card{
+        flex-wrap:wrap;
+    }
+}
+/* ================= SUCCESS / ERROR BORDER ================= */
+.input-error{
+    border-color:#dc2626 !important;
+    box-shadow:0 0 0 3px rgba(220,38,38,.15) !important;
+}
+.input-success{
+    border-color:#16a34a !important;
+}
+/* ================= SMOOTH ANIMATION ================= */
+input,
+select,
+textarea,
+.btn{
+    transition:all .2s ease;
+}
+</style>
+{% set inst = appointment.institution or '' %}
+{% set srv = appointment.service or '' %}
+{% set st = appointment.status or 'Pending' %}
+{% set pr = appointment.priority or 'Medium' %}
+
+<div class="app-card">
+
+    <div class="header">
+        Edit Appointment
+    </div>
+    <div class="body">
+<form id="editForm" method="POST">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<!-- ================= NAME / EMAIL ================= -->
+<div class="grid">
+    <div class="field">
+        <label>Full Name</label>
+        <input type="text"
+               name="guest_name"
+               value="{{ appointment.guest_name or '' }}"
+               autocomplete="name"
+               required>
+    </div>
+    <div class="field">
+        <label>Email</label>
+        <input type="email"
+               name="email"
+               value="{{ appointment.email or '' }}"
+               autocomplete="email"
+               required>
+    </div>
+
+</div>
+<!-- ================= PHONE / INSTITUTION ================= -->
+<div class="grid">
+    <div class="field">
+        <label>Phone</label>
+        <input type="text"
+               name="phone"
+               value="{{ appointment.phone or '' }}"
+               autocomplete="tel">
+    </div>
+    <div class="field">
+        <label>Institution</label>
+        <select id="institution" name="institution" required>
+            <option value="">Select Institution</option>
+            <option value="TNLA" {{ "selected" if inst=="TNLA" else "" }}>TNLA</option>
+            <option value="Ministry of Agriculture" {{ "selected" if inst=="Ministry of Agriculture" else "" }}>Ministry of Agriculture</option>
+            <option value="Ministry of Education" {{ "selected" if inst=="Ministry of Education" else "" }}>Ministry of Education</option>
+            <option value="Ministry of Health" {{ "selected" if inst=="Ministry of Health" else "" }}>Ministry of Health</option>
+            <option value="Ministry of Finance" {{ "selected" if inst=="Ministry of Finance" else "" }}>Ministry of Finance</option>
+            <option value="Ministry of Interior" {{ "selected" if inst=="Ministry of Interior" else "" }}>Ministry of Interior</option>
+            <option value="Ministry of Defense" {{ "selected" if inst=="Ministry of Defense" else "" }}>Ministry of Defense</option>
+            <option value="Ministry of Foreign Affairs" {{ "selected" if inst=="Ministry of Foreign Affairs" else "" }}>Ministry of Foreign Affairs</option>
+            <option value="Ministry of Justice" {{ "selected" if inst=="Ministry of Justice" else "" }}>Ministry of Justice</option>
+            <option value="Ministry of Transport" {{ "selected" if inst=="Ministry of Transport" else "" }}>Ministry of Transport</option>
+            <option value="Ministry of Energy" {{ "selected" if inst=="Ministry of Energy" else "" }}>Ministry of Energy</option>
+            <option value="Ministry of Water" {{ "selected" if inst=="Ministry of Water" else "" }}>Ministry of Water</option>
+            <option value="Ministry of ICT" {{ "selected" if inst=="Ministry of ICT" else "" }}>Ministry of ICT</option>
+            <option value="Ministry of Labor" {{ "selected" if inst=="Ministry of Labor" else "" }}>Ministry of Labor</option>
+            <option value="Ministry of Local Government" {{ "selected" if inst=="Ministry of Local Government" else "" }}>Ministry of Local Government</option>
+            <option value="Ministry of Environment" {{ "selected" if inst=="Ministry of Environment" else "" }}>Ministry of Environment</option>
+            <option value="Ministry of Youth" {{ "selected" if inst=="Ministry of Youth" else "" }}>Ministry of Youth</option>
+            <option value="Other"
+                {% if appointment.other_institution %}
+                selected
+                {% endif %}>
+                Other
+            </option>
+        </select>
+    </div>
+</div>
+<!-- ================= OTHER INSTITUTION ================= -->
+<div class="field {% if not appointment.other_institution %}hidden{% endif %}" id="otherBox">
+    <label>Specify Institution</label>
+    <input type="text"
+           name="other_institution"
+           value="{{ appointment.other_institution or '' }}"
+           placeholder="Enter institution name">
+</div>
+<!-- ================= SERVICE ================= -->
+<div class="field">
+    <label>Service Type</label>
+    <select id="service" name="service" required>
+        <option value="">Select Service</option>
+        <option value="Courtesy Call" {{ "selected" if srv=="Courtesy Call" else "" }}>Courtesy Call</option>
+        <option value="Official Meeting with the Speaker"
+                {{ "selected" if srv=="Official Meeting with the Speaker" else "" }}>
+            Official Meeting with the Speaker
+        </option>
+        <option value="Committee Consultation"
+                {{ "selected" if srv=="Committee Consultation" else "" }}>
+            Committee Consultation
+        </option>
+        <option value="Legislative Discussion"
+                {{ "selected" if srv=="Legislative Discussion" else "" }}>
+            Legislative Discussion
+        </option>
+        <option value="Policy Consultation"
+                {{ "selected" if srv=="Policy Consultation" else "" }}>
+            Policy Consultation
+        </option>
+        <option value="Stakeholder Engagement"
+                {{ "selected" if srv=="Stakeholder Engagement" else "" }}>
+            Stakeholder Engagement
+        </option>
+        <option value="Petition Submission"
+                {{ "selected" if srv=="Petition Submission" else "" }}>
+            Petition Submission
+        </option>
+        <option value="Official Delegation Visit"
+                {{ "selected" if srv=="Official Delegation Visit" else "" }}>
+            Official Delegation Visit
+        </option>
+        <option value="Parliamentary Inquiry"
+                {{ "selected" if srv=="Parliamentary Inquiry" else "" }}>
+            Parliamentary Inquiry
+        </option>
+        <option value="Media Engagement"
+                {{ "selected" if srv=="Media Engagement" else "" }}>
+            Media Engagement
+        </option>
+        <option value="Protocol Visit"
+                {{ "selected" if srv=="Protocol Visit" else "" }}>
+            Protocol Visit
+        </option>
+        <option value="Other"
+            {% if appointment.other_service %}
+            selected
+            {% endif %}>
+            Other
+        </option>
+    </select>
+</div>
+<!-- ================= OTHER SERVICE ================= -->
+<div class="field {% if not appointment.other_service %}hidden{% endif %}" id="otherServiceBox">
+    <label>Specify Service</label>
+    <input type="text"
+           name="other_service"
+           value="{{ appointment.other_service or '' }}"
+           placeholder="Enter service type">
+</div>
+<!-- ================= PURPOSE ================= -->
+<div class="field">
+    <label>Purpose of Visit / Meeting</label>
+    <textarea name="purpose"
+              rows="4"
+              required>{{ appointment.purpose or '' }}</textarea>
+</div>
+<!-- ================= DATE / TIME ================= -->
+<div class="grid">
+    <div class="field">
+        <label>Appointment Date</label>
+        <input type="date"
+               name="appointment_date"
+               value="{{ appointment.appointment_date.strftime('%Y-%m-%d') if appointment.appointment_date else '' }}"
+               required>
+    </div>
+    <div class="field">
+        <label>Appointment Time</label>
+        <input type="time"
+               name="appointment_time"
+               value="{{ appointment.appointment_time.strftime('%H:%M') if appointment.appointment_time else '' }}"
+               required>
+    </div>
+</div>
+<<!-- ================= PRIORITY ================= -->
+<div class="field">
+    <label>Priority</label>
+
+    <select name="priority" id="priority" required>
+        <option value="High"
+            {{ "selected" if pr=="High" else "" }}>
+            🔴 High
+        </option>
+
+        <option value="Medium"
+            {{ "selected" if pr=="Medium" else "" }}>
+            🟡 Medium
+        </option>
+
+        <option value="Low"
+            {{ "selected" if pr=="Low" else "" }}>
+            🟢 Low
+        </option>
+    </select>
+</div>
+<!-- ================= STATUS (ADMIN ONLY) ================= -->
+{% if current_user.role == "admin" %}
+<div class="field">
+    <label>Status</label>
+    <select name="status">
+        <option value="Pending"
+            {{ "selected" if st=="Pending" else "" }}>
+            Pending
+        </option>
+        <option value="Approved"
+            {{ "selected" if st=="Approved" else "" }}>
+            Approved
+        </option>
+        <option value="Rejected"
+            {{ "selected" if st=="Rejected" else "" }}>
+            Rejected
+        </option>
+    </select>
+</div>
+{% endif %}
+<!-- ================= NOTES ================= -->
+<div class="field">
+    <label>Comments / Remarks</label>
+    <textarea name="notes"
+              rows="4">{{ appointment.notes or '' }}</textarea>
+</div>
+<!-- ================= ACTIONS ================= -->
+<div class="actions">
+    <a href="{{ url_for('appointments.appointment_list') }}"
+       class="btn ghost">
+        Cancel
+    </a>
+    <button type="submit"
+            class="btn primary">
+        Update Appointment
+    </button>
+</div>
+</form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const form = document.getElementById("editForm");
+    if (!form) return;
+
+    const submitBtn = form.querySelector(".primary");
+    let isSubmitting = false;
+
+    // ===== Select Elements =====
+    const institution = document.getElementById("institution");
+    const service = document.getElementById("service");
+
+    const otherBox = document.getElementById("otherBox");
+    const otherServiceBox = document.getElementById("otherServiceBox");
+
+    const otherInstitutionInput = form.querySelector('[name="other_institution"]');
+    const otherServiceInput = form.querySelector('[name="other_service"]');
+
+    const timeInput = form.querySelector('[name="appointment_time"]');
+    const priorityInput = form.querySelector('[name="priority"]');
+
+    // ===== CSRF =====
+    const csrfInput = form.querySelector('[name="csrf_token"]');
+    const csrfToken = csrfInput ? csrfInput.value : null;
+
+    // ================= CLEAR ERRORS =================
+    function clearErrors() {
+        form.querySelectorAll("input, select, textarea").forEach(el => {
+            el.style.border = "";
+            el.style.boxShadow = "";
+        });
+    }
+
+    // ================= MARK ERROR =================
+    function markError(el) {
+        if (!el) return;
+
+        el.style.border = "1px solid #dc2626";
+        el.style.boxShadow = "0 0 0 3px rgba(220,38,38,.15)";
+        el.focus();
+    }
+
+    // ================= SHOW OTHER FIELDS =================
+    function toggleFields() {
+
+        if (institution.value === "Other") {
+            otherBox.classList.remove("hidden");
+        } else {
+            otherBox.classList.add("hidden");
+            if (otherInstitutionInput) otherInstitutionInput.value = "";
+        }
+
+        if (service.value === "Other") {
+            otherServiceBox.classList.remove("hidden");
+        } else {
+            otherServiceBox.classList.add("hidden");
+            if (otherServiceInput) otherServiceInput.value = "";
+        }
+    }
+
+    institution?.addEventListener("change", toggleFields);
+    service?.addEventListener("change", toggleFields);
+    toggleFields();
+
+    // ================= ALERT =================
+    function fail(message, field = null) {
+
+        isSubmitting = false;
+
+        if (field) markError(field);
+
+        Swal.fire({
+            icon: "warning",
+            title: message
+        });
+
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = "Update Appointment";
+    }
+
+    // ================= SUBMIT =================
+    form.addEventListener("submit", async (e) => {
+
+        e.preventDefault();
+
+        if (isSubmitting) return;
+
+        isSubmitting = true;
+
+        clearErrors();
+
+        const guestName = form.guest_name.value.trim();
+        const email = form.email.value.trim();
+        const phone = form.phone.value.trim();
+        const appointmentDate = form.appointment_date.value;
+        const appointmentTime = timeInput?.value;
+        const purpose = form.purpose.value.trim();
+        const priority = priorityInput?.value;
+
+        // ===== VALIDATION =====
+
+        if (!guestName)
+            return fail("Full Name Required", form.guest_name);
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+            return fail("Invalid Email Address", form.email);
+
+        if (phone && !/^[0-9+\-\s()]{7,20}$/.test(phone))
+            return fail("Invalid Phone Number", form.phone);
+
+        if (!appointmentDate)
+            return fail("Appointment Date Required", form.appointment_date);
+
+        if (!appointmentTime)
+            return fail("Appointment Time Required", timeInput);
+
+        if (!purpose)
+            return fail("Purpose is required", form.purpose);
+
+        if (!priority)
+            return fail("Please select Priority", priorityInput);
+
+        // ===== FORM DATA =====
+        const formData = new FormData(form);
+
+        if (csrfToken) {
+            formData.append("csrf_token", csrfToken);
+        }
+
+        // ===== LOADING =====
+        submitBtn.disabled = true;
+        submitBtn.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-1"></span> Updating...';
+
+        try {
+
+            const response = await fetch(window.location.href, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json",
+                    ...(csrfToken ? { "X-CSRFToken": csrfToken } : {})
+                }
+            });
+
+            const contentType = response.headers.get("content-type") || "";
+
+            let data;
+
+            if (contentType.includes("application/json")) {
+
+                data = await response.json();
+
+            } else {
+
+                const text = await response.text();
+
+                throw new Error(
+                    text.includes("<!doctype html>")
+                        ? "Server blocked request (CSRF invalid)"
+                        : text || "Invalid server response"
+                );
+            }
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "Update failed");
+            }
+
+            await Swal.fire({
+                icon: "success",
+                title: "Updated Successfully",
+                text: data.message || "Appointment updated successfully",
+                timer: 1800,
+                showConfirmButton: false
+            });
+
+            window.location.href = "/appointments";
+
+        } catch (error) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Update Failed",
+                text: error.message
+            });
+
+        } finally {
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = "Update Appointment";
+            isSubmitting = false;
+
+        }
+
+    });
+
+});
+</script>
+{% endblock %}

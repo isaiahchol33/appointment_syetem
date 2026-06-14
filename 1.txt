@@ -1,0 +1,1724 @@
+#templates/admin_dashboard.html
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold">Admin Dashboard</h2>
+            <p class="text-muted">
+                Manage all appointments
+            </p>
+        </div>
+
+        <a href="{{ url_for('analytics.analytics_dashboard') }}"
+           class="btn btn-dark">
+
+            View Analytics
+
+        </a>
+
+    </div>
+
+    <div class="row mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 text-center p-4">
+                <h3>{{ total }}</h3>
+                <p>Total</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 text-center p-4">
+                <h3>{{ approved }}</h3>
+                <p>Approved</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 text-center p-4">
+                <h3>{{ pending }}</h3>
+                <p>Pending</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 text-center p-4">
+                <h3>{{ rejected }}</h3>
+                <p>Rejected</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow border-0 rounded-4">
+
+        <div class="card-body">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for appointment in appointments %}
+
+                    <tr>
+
+                        <td>{{ appointment.patient_name }}</td>
+
+                        <td>{{ appointment.email }}</td>
+
+                        <td>{{ appointment.service }}</td>
+
+                        <td>{{ appointment.appointment_date }}</td>
+
+                        <td>
+
+                            {% if appointment.status == 'Approved' %}
+                                <span class="badge bg-success">
+                                    Approved
+                                </span>
+
+                            {% elif appointment.status == 'Rejected' %}
+                                <span class="badge bg-danger">
+                                    Rejected
+                                </span>
+
+                            {% else %}
+                                <span class="badge bg-warning text-dark">
+                                    Pending
+                                </span>
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <a href="{{ url_for('admin.approve_appointment', id=appointment.id) }}"
+                               class="btn btn-success btn-sm">
+
+                                Approve
+
+                            </a>
+
+                            <a href="{{ url_for('admin.reject_appointment', id=appointment.id) }}"
+                               class="btn btn-danger btn-sm">
+
+                                Reject
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+#teamplate/analytics.html
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold">Analytics Dashboard</h2>
+
+        <p class="text-muted">
+            Appointment statistics overview
+        </p>
+
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 p-4 text-center">
+                <h2>{{ total }}</h2>
+                <p>Total Appointments</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 p-4 text-center">
+                <h2>{{ approved }}</h2>
+                <p>Approved</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 p-4 text-center">
+                <h2>{{ pending }}</h2>
+                <p>Pending</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 p-4 text-center">
+                <h2>{{ rejected }}</h2>
+                <p>Rejected</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mt-5 g-4">
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow rounded-4 p-4 text-center">
+                <h3>{{ consultation }}</h3>
+                <p>Consultation</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow rounded-4 p-4 text-center">
+                <h3>{{ dental }}</h3>
+                <p>Dental</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow rounded-4 p-4 text-center">
+                <h3>{{ therapy }}</h3>
+                <p>Therapy</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow rounded-4 p-4 text-center">
+                <h3>{{ eye_check }}</h3>
+                <p>Eye Check</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+#templates/appointments.html
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-4">
+
+        <h2 class="fw-bold">Appointments</h2>
+
+        <a href="{{ url_for('appointments.book_appointment') }}"
+           class="btn btn-primary">
+
+            New Appointment
+        </a>
+
+    </div>
+
+    <div class="card shadow border-0 rounded-4">
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for appointment in appointments %}
+
+                    <tr>
+
+                        <td>{{ loop.index }}</td>
+
+                        <td>{{ appointment.patient_name }}</td>
+
+                        <td>{{ appointment.service }}</td>
+
+                        <td>{{ appointment.appointment_date }}</td>
+
+                        <td>{{ appointment.appointment_time }}</td>
+
+                        <td>
+
+                            {% if appointment.status == 'Approved' %}
+                                <span class="badge bg-success">
+                                    Approved
+                                </span>
+
+                            {% elif appointment.status == 'Rejected' %}
+                                <span class="badge bg-danger">
+                                    Rejected
+                                </span>
+
+                            {% else %}
+                                <span class="badge bg-warning text-dark">
+                                    Pending
+                                </span>
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <a href="{{ url_for('appointments.delete_appointment', id=appointment.id) }}"
+                               class="btn btn-danger btn-sm">
+
+                                Delete
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+#templates/base.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment System</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">Appointment System</a>
+
+        <div>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-sm">Dashboard</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm">Logout</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="alert alert-info">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}
+    {% endblock %}
+
+</div>
+
+</body>
+</html>
+
+#templates/book_appointment.html
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8">
+
+            <div class="card shadow-lg border-0 rounded-4">
+
+                <div class="card-body p-5">
+
+                    <h2 class="fw-bold mb-4">
+                        Book Appointment
+                    </h2>
+
+                    <form method="POST">
+
+                        {{ form.hidden_tag() }}
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                {{ form.patient_name.label(class="form-label") }}
+
+                                {{ form.patient_name(
+                                    class="form-control form-control-lg"
+                                ) }}
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                {{ form.email.label(class="form-label") }}
+
+                                {{ form.email(
+                                    class="form-control form-control-lg"
+                                ) }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                {{ form.phone.label(class="form-label") }}
+
+                                {{ form.phone(
+                                    class="form-control form-control-lg"
+                                ) }}
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                {{ form.service.label(class="form-label") }}
+
+                                {{ form.service(
+                                    class="form-select form-select-lg"
+                                ) }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                {{ form.appointment_date.label(
+                                    class="form-label"
+                                ) }}
+
+                                {{ form.appointment_date(
+                                    class="form-control form-control-lg",
+                                    type="date"
+                                ) }}
+
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+
+                                {{ form.appointment_time.label(
+                                    class="form-label"
+                                ) }}
+
+                                {{ form.appointment_time(
+                                    class="form-control form-control-lg",
+                                    type="time"
+                                ) }}
+
+                            </div>
+
+                        </div>
+
+                        <div class="d-grid">
+
+                            {{ form.submit(
+                                class="btn btn-primary btn-lg"
+                            ) }}
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+#templates/dashboard.html
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold">Dashboard</h2>
+            <p class="text-muted">
+                Welcome back {{ current_user.full_name }}
+            </p>
+        </div>
+
+        <div>
+            <a href="{{ url_for('appointments.book_appointment') }}"
+               class="btn btn-primary">
+
+                Book Appointment
+            </a>
+
+            <a href="{{ url_for('appointments.appointment_list') }}"
+               class="btn btn-dark">
+
+                My Appointments
+            </a>
+        </div>
+
+    </div>
+
+    <div class="card shadow border-0 rounded-4">
+
+        <div class="card-body">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for appointment in appointments %}
+
+                    <tr>
+
+                        <td>{{ appointment.patient_name }}</td>
+
+                        <td>{{ appointment.service }}</td>
+
+                        <td>{{ appointment.appointment_date }}</td>
+
+                        <td>{{ appointment.appointment_time }}</td>
+
+                        <td>
+
+                            {% if appointment.status == 'Approved' %}
+                                <span class="badge bg-success">
+                                    Approved
+                                </span>
+
+                            {% elif appointment.status == 'Rejected' %}
+                                <span class="badge bg-danger">
+                                    Rejected
+                                </span>
+
+                            {% else %}
+                                <span class="badge bg-warning text-dark">
+                                    Pending
+                                </span>
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+#templates/index.html
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="text-center mt-5">
+    <h1 class="display-4">Appointment Booking System</h1>
+    <p class="lead">Manage appointments professionally</p>
+
+    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Get Started</a>
+</div>
+
+{% endblock %}
+
+#templates/login.html
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+
+        <div class="col-md-5">
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold">Login</h2>
+                        <p class="text-muted">
+                            Access your appointment dashboard
+                        </p>
+                    </div>
+
+                    <form method="POST">
+
+                        {{ form.hidden_tag() }}
+
+                        <div class="mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control form-control-lg") }}
+                        </div>
+
+                        <div class="mb-4">
+                            {{ form.password.label(class="form-label") }}
+                            {{ form.password(class="form-control form-control-lg") }}
+                        </div>
+
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                        </div>
+
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('auth.register') }}">
+                            Create an Account
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+
+#templates/register.html
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+
+        <div class="card shadow">
+            <div class="card-body">
+                <h2 class="mb-4">Register</h2>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+#routes/admin.py
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
+
+from database import db
+from models import Appointment
+
+admin = Blueprint("admin", __name__)
+
+
+@admin.route("/admin")
+@login_required
+def admin_dashboard():
+
+    if current_user.role != "admin":
+        flash("Access denied", "danger")
+        return redirect(
+            url_for("appointments.dashboard")
+        )
+
+    appointments = Appointment.query.order_by(
+        Appointment.created_at.desc()
+    ).all()
+
+    total = Appointment.query.count()
+
+    pending = Appointment.query.filter_by(
+        status="Pending"
+    ).count()
+
+    approved = Appointment.query.filter_by(
+        status="Approved"
+    ).count()
+
+    rejected = Appointment.query.filter_by(
+        status="Rejected"
+    ).count()
+
+    return render_template(
+        "admin_dashboard.html",
+        appointments=appointments,
+        total=total,
+        pending=pending,
+        approved=approved,
+        rejected=rejected
+    )
+
+
+@admin.route("/approve/<int:id>")
+@login_required
+def approve_appointment(id):
+
+    if current_user.role != "admin":
+        flash("Access denied", "danger")
+        return redirect(
+            url_for("appointments.dashboard")
+        )
+
+    appointment = Appointment.query.get_or_404(id)
+
+    appointment.status = "Approved"
+
+    db.session.commit()
+
+    flash("Appointment approved", "success")
+
+    return redirect(
+        url_for("admin.admin_dashboard")
+    )
+
+
+@admin.route("/reject/<int:id>")
+@login_required
+def reject_appointment(id):
+
+    if current_user.role != "admin":
+        flash("Access denied", "danger")
+        return redirect(
+            url_for("appointments.dashboard")
+        )
+
+    appointment = Appointment.query.get_or_404(id)
+
+    appointment.status = "Rejected"
+
+    db.session.commit()
+
+    flash("Appointment rejected", "warning")
+
+    return redirect(
+        url_for("admin.admin_dashboard")
+    )
+
+#routes/analytics.py
+from flask import Blueprint, render_template
+from flask_login import login_required, current_user
+
+from models import Appointment
+
+analytics = Blueprint("analytics", __name__)
+
+
+@analytics.route("/analytics")
+@login_required
+def analytics_dashboard():
+
+    if current_user.role != "admin":
+        return render_template("403.html")
+
+    appointments = Appointment.query.all()
+
+    total = len(appointments)
+
+    approved = len([
+        a for a in appointments
+        if a.status == "Approved"
+    ])
+
+    pending = len([
+        a for a in appointments
+        if a.status == "Pending"
+    ])
+
+    rejected = len([
+        a for a in appointments
+        if a.status == "Rejected"
+    ])
+
+    consultation = len([
+        a for a in appointments
+        if a.service == "Consultation"
+    ])
+
+    dental = len([
+        a for a in appointments
+        if a.service == "Dental"
+    ])
+
+    therapy = len([
+        a for a in appointments
+        if a.service == "Therapy"
+    ])
+
+    eye_check = len([
+        a for a in appointments
+        if a.service == "Eye Check"
+    ])
+
+    return render_template(
+        "analytics.html",
+        total=total,
+        approved=approved,
+        pending=pending,
+        rejected=rejected,
+        consultation=consultation,
+        dental=dental,
+        therapy=therapy,
+        eye_check=eye_check
+    )
+
+#routes/appointments.py
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
+
+from database import db
+from models import Appointment
+from routes.forms import AppointmentForm
+
+appointments = Blueprint("appointments", __name__)
+
+
+@appointments.route("/dashboard")
+@login_required
+def dashboard():
+
+    if current_user.role == "admin":
+        data = Appointment.query.all()
+    else:
+        data = Appointment.query.filter_by(
+            email=current_user.email
+        ).all()
+
+    return render_template(
+        "dashboard.html",
+        appointments=data
+    )
+
+
+@appointments.route("/book", methods=["GET", "POST"])
+@login_required
+def book_appointment():
+
+    form = AppointmentForm()
+
+    if form.validate_on_submit():
+
+        appointment = Appointment(
+            patient_name=form.patient_name.data,
+            email=form.email.data,
+            phone=form.phone.data,
+            service=form.service.data,
+            appointment_date=form.appointment_date.data,
+            appointment_time=form.appointment_time.data,
+            status="Pending"
+        )
+
+        db.session.add(appointment)
+        db.session.commit()
+
+        flash("Appointment booked successfully", "success")
+
+        return redirect(
+            url_for("appointments.dashboard")
+        )
+
+    return render_template(
+        "book_appointment.html",
+        form=form
+    )
+
+
+@appointments.route("/appointments")
+@login_required
+def appointment_list():
+
+    if current_user.role == "admin":
+        data = Appointment.query.all()
+    else:
+        data = Appointment.query.filter_by(
+            email=current_user.email
+        ).all()
+
+    return render_template(
+        "appointments.html",
+        appointments=data
+    )
+
+
+@appointments.route("/delete/<int:id>")
+@login_required
+def delete_appointment(id):
+
+    appointment = Appointment.query.get_or_404(id)
+
+    if (
+        current_user.role != "admin"
+        and appointment.email != current_user.email
+    ):
+        flash("Access denied", "danger")
+        return redirect(
+            url_for("appointments.dashboard")
+        )
+
+    db.session.delete(appointment)
+    db.session.commit()
+
+    flash("Appointment deleted", "info")
+
+    return redirect(
+        url_for("appointments.dashboard")
+    )
+
+#routes.auth.py
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import (
+    login_user,
+    logout_user,
+    login_required,
+    current_user
+)
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
+
+from database import db
+from models import User
+from routes.forms import RegisterForm, LoginForm
+
+auth = Blueprint("auth", __name__)
+
+
+@auth.route("/register", methods=["GET", "POST"])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for("appointments.dashboard"))
+
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+
+        existing_user = User.query.filter_by(
+            email=form.email.data
+        ).first()
+
+        if existing_user:
+            flash("Email already exists", "danger")
+            return redirect(url_for("auth.register"))
+
+        hashed_password = generate_password_hash(
+            form.password.data
+        )
+
+        user = User(
+            full_name=form.full_name.data,
+            email=form.email.data,
+            password=hashed_password
+        )
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash("Registration successful", "success")
+        return redirect(url_for("auth.login"))
+
+    return render_template("register.html", form=form)
+
+
+@auth.route("/login", methods=["GET", "POST"])
+def login():
+
+    if current_user.is_authenticated:
+        return redirect(url_for("appointments.dashboard"))
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+
+        user = User.query.filter_by(
+            email=form.email.data
+        ).first()
+
+        if user and check_password_hash(
+            user.password,
+            form.password.data
+        ):
+
+            login_user(user)
+
+            flash("Login successful", "success")
+
+            if user.role == "admin":
+                return redirect(url_for("admin.admin_dashboard"))
+
+            return redirect(url_for("appointments.dashboard"))
+
+        flash("Invalid email or password", "danger")
+
+    return render_template("login.html", form=form)
+
+
+@auth.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("Logged out successfully", "info")
+    return redirect(url_for("auth.login"))
+
+#static/script.js
+// =========================================
+// AUTO CLOSE ALERTS
+// =========================================
+
+setTimeout(() => {
+
+    let alerts = document.querySelectorAll(".alert");
+
+    alerts.forEach((alert) => {
+
+        alert.style.transition = "opacity 0.5s ease";
+
+        alert.style.opacity = "0";
+
+        setTimeout(() => {
+            alert.remove();
+        }, 500);
+
+    });
+
+}, 3000);
+
+
+// =========================================
+// CONFIRM DELETE
+// =========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    let deleteButtons = document.querySelectorAll(".btn-danger");
+
+    deleteButtons.forEach((button) => {
+
+        button.addEventListener("click", (e) => {
+
+            if (
+                button.innerText.trim().toLowerCase() === "delete"
+            ) {
+
+                let confirmDelete = confirm(
+                    "Are you sure you want to delete this appointment?"
+                );
+
+                if (!confirmDelete) {
+                    e.preventDefault();
+                }
+
+            }
+
+        });
+
+    });
+
+});
+
+
+// =========================================
+// LOADING BUTTON EFFECT
+// =========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    let forms = document.querySelectorAll("form");
+
+    forms.forEach((form) => {
+
+        form.addEventListener("submit", () => {
+
+            let submitBtn = form.querySelector(
+                "button[type='submit'], input[type='submit']"
+            );
+
+            if (submitBtn) {
+
+                submitBtn.disabled = true;
+
+                submitBtn.innerHTML = "Processing...";
+
+            }
+
+        });
+
+    });
+
+});
+
+
+// =========================================
+// TABLE SEARCH FILTER
+// =========================================
+
+function searchTable() {
+
+    let input = document.getElementById("tableSearch");
+
+    if (!input) return;
+
+    let filter = input.value.toLowerCase();
+
+    let table = document.querySelector("table tbody");
+
+    let rows = table.querySelectorAll("tr");
+
+    rows.forEach((row) => {
+
+        let text = row.innerText.toLowerCase();
+
+        if (text.includes(filter)) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+
+    });
+
+}
+
+
+// =========================================
+// DARK MODE TOGGLE
+// =========================================
+
+function toggleDarkMode() {
+
+    document.body.classList.toggle("dark-mode");
+
+    let darkMode = document.body.classList.contains(
+        "dark-mode"
+    );
+
+    localStorage.setItem("darkMode", darkMode);
+
+}
+
+
+// =========================================
+// LOAD DARK MODE
+// =========================================
+
+window.onload = () => {
+
+    let darkMode = localStorage.getItem("darkMode");
+
+    if (darkMode === "true") {
+        document.body.classList.add("dark-mode");
+    }
+
+};
+
+
+// =========================================
+// ANIMATED COUNTER
+// =========================================
+
+function animateCounter(id, target) {
+
+    let element = document.getElementById(id);
+
+    if (!element) return;
+
+    let count = 0;
+
+    let speed = target / 50;
+
+    let updateCounter = () => {
+
+        count += speed;
+
+        if (count < target) {
+
+            element.innerText = Math.floor(count);
+
+            requestAnimationFrame(updateCounter);
+
+        } else {
+
+            element.innerText = target;
+
+        }
+
+    };
+
+    updateCounter();
+
+}
+
+
+// =========================================
+// MOBILE MENU
+// =========================================
+
+function toggleMenu() {
+
+    let menu = document.getElementById("mobileMenu");
+
+    if (menu) {
+
+        menu.classList.toggle("show");
+
+    }
+
+}
+
+
+// =========================================
+// TOOLTIP ACTIVATION
+// =========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    let tooltipTriggerList = [].slice.call(
+        document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+
+    });
+
+});
+
+
+// =========================================
+// DATE VALIDATION
+// =========================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    let dateInput = document.querySelector(
+        "input[type='date']"
+    );
+
+    if (dateInput) {
+
+        let today = new Date().toISOString().split("T")[0];
+
+        dateInput.setAttribute("min", today);
+
+    }
+
+});
+
+
+// =========================================
+// SUCCESS SOUND
+// =========================================
+
+function playSuccessSound() {
+
+    let audio = new Audio(
+        "https://www.soundjay.com/buttons/sounds/button-3.mp3"
+    );
+
+    audio.play();
+
+}
+
+
+#static/style.css
+/* =========================================
+   GLOBAL STYLES
+========================================= */
+
+body {
+    background: #f4f7fc;
+    font-family: "Segoe UI", sans-serif;
+    color: #333;
+    min-height: 100vh;
+}
+
+
+/* =========================================
+   NAVBAR
+========================================= */
+
+.navbar {
+    padding: 15px 0;
+    background: linear-gradient(
+        90deg,
+        #0d6efd,
+        #084298
+    ) !important;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+
+/* =========================================
+   CARDS
+========================================= */
+
+.card {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.btn {
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: scale(1.02);
+}
+
+.btn-primary {
+    background: #0d6efd;
+    border: none;
+}
+
+.btn-success {
+    background: #198754;
+    border: none;
+}
+
+.btn-danger {
+    background: #dc3545;
+    border: none;
+}
+
+.btn-dark {
+    background: #212529;
+    border: none;
+}
+
+
+/* =========================================
+   FORMS
+========================================= */
+
+.form-control,
+.form-select {
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid #dce3ea;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15);
+}
+
+
+/* =========================================
+   TABLES
+========================================= */
+
+.table {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.table thead {
+    background: #0d6efd;
+    color: white;
+}
+
+.table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+
+/* =========================================
+   BADGES
+========================================= */
+
+.badge {
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+}
+
+
+/* =========================================
+   ALERTS
+========================================= */
+
+.alert {
+    border-radius: 12px;
+    border: none;
+}
+
+
+/* =========================================
+   DASHBOARD STAT CARDS
+========================================= */
+
+.stats-card {
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+}
+
+.stats-card h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+.stats-card p {
+    margin-top: 10px;
+    color: #6c757d;
+}
+
+
+/* =========================================
+   LOGIN / REGISTER
+========================================= */
+
+.auth-container {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================
+   HERO SECTION
+========================================= */
+
+.hero-section {
+    padding: 100px 0;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.footer {
+    margin-top: 60px;
+    padding: 20px;
+    text-align: center;
+    background: white;
+    border-top: 1px solid #dee2e6;
+}
+
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #0d6efd;
+    border-radius: 10px;
+}
+
+
+/* =========================================
+   RESPONSIVE DESIGN
+========================================= */
+
+@media (max-width: 768px) {
+
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+
+    .table {
+        font-size: 14px;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+}
+
+#app.py
+from flask import Flask, render_template, redirect, url_for, flash, request
+from config import Config
+from database import db
+from models import User, Appointment
+from forms import RegisterForm, LoginForm, AppointmentForm
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import (
+    LoginManager,
+    login_user,
+    logout_user,
+    login_required,
+    current_user
+)
+import pandas as pd
+import os   # ✅ Added for file handling
+
+app = Flask(__name__)
+app.config.from_object(Config)
+db.init_app(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+@app.route("/reject/<int:appointment_id>")
+@login_required
+def reject_appointment(appointment_id):
+    if current_user.role != "admin":
+        flash("Access denied")
+        return redirect(url_for("dashboard"))
+
+    appointment = Appointment.query.get_or_404(appointment_id)
+    appointment.status = "Rejected"
+    db.session.commit()
+
+    flash("Appointment rejected")
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin")
+@login_required
+def admin_dashboard():
+    if current_user.role != "admin":
+        flash("Access denied")
+        return redirect(url_for("dashboard"))
+
+    appointments = Appointment.query.all()
+    return render_template("admin_dashboard.html", appointments=appointments)
+
+
+@app.route("/analytics")
+@login_required
+def analytics():
+    appointments = Appointment.query.all()
+
+    total = len(appointments)
+    approved = len([a for a in appointments if a.status == "Approved"])
+    pending = len([a for a in appointments if a.status == "Pending"])
+    rejected = len([a for a in appointments if a.status == "Rejected"])
+
+    return render_template(
+        "analytics.html",
+        total=total,
+        approved=approved,
+        pending=pending,
+        rejected=rejected
+    )
+
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+
+        admin = User.query.filter_by(email="admin@gmail.com").first()
+        if not admin:
+            admin_user = User(
+                full_name="Administrator",
+                email="admin@gmail.com",
+                password=generate_password_hash("admin123"),
+                role="admin"
+            )
+            db.session.add(admin_user)
+            db.session.commit()
+
+    app.run(debug=True)
+#config.py
+import os
+
+class Config:
+    SECRET_KEY = "super-secret-key"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///appointments.db"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+#database.py
+from flask_sqlalchemy import SQLAlchemy
+
+
+db = SQLAlchemy()
+
+#forms.py
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, SelectField
+from wtforms.validators import DataRequired, Email, Length
+
+
+class RegisterForm(FlaskForm):
+    full_name = StringField("Full Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField(
+        "Password",
+        validators=[DataRequired(), Length(min=6)]
+    )
+    submit = SubmitField("Register")
+
+
+class LoginForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    password = PasswordField("Password", validators=[DataRequired()])
+    submit = SubmitField("Login")
+
+
+class AppointmentForm(FlaskForm):
+    patient_name = StringField("Patient Name", validators=[DataRequired()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
+    phone = StringField("Phone")
+    service = SelectField(
+        "Service",
+        choices=[
+            ("Consultation", "Consultation"),
+            ("Dental", "Dental"),
+            ("Eye Check", "Eye Check"),
+            ("Therapy", "Therapy")
+        ]
+    )
+    appointment_date = StringField("Date")
+    appointment_time = StringField("Time")
+    submit = SubmitField("Book Appointment")
+
+#models.py
+from database import db
+from flask_login import UserMixin
+from datetime import datetime
+
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    full_name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+    role = db.Column(db.String(20), default="user")
+
+
+class Appointment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    patient_name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(30))
+    service = db.Column(db.String(100))
+    appointment_date = db.Column(db.String(30))
+    appointment_time = db.Column(db.String(30))
+    status = db.Column(db.String(20), default="Pending")
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

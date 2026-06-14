@@ -1,0 +1,1169 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+:root{
+    --bg-1:#f8fafc;
+    --bg-2:#eef4ff;
+
+    --glass:rgba(255,255,255,.72);
+    --glass-strong:rgba(255,255,255,.88);
+    --border:rgba(255,255,255,.55);
+
+    --primary:#2563eb;
+    --success:#16a34a;
+    --warning:#f59e0b;
+    --danger:#ef4444;
+
+    --shadow-sm:0 6px 16px rgba(15,23,42,.05);
+    --shadow-md:0 12px 28px rgba(15,23,42,.08);
+    --shadow-lg:0 20px 45px rgba(15,23,42,.12);
+
+    --radius:18px;
+}
+
+/* ================= BODY ================= */
+
+body{
+    background:
+        radial-gradient(circle at top left,#dbeafe 0%,transparent 30%),
+        radial-gradient(circle at top right,#e0e7ff 0%,transparent 35%),
+        linear-gradient(135deg,var(--bg-1),var(--bg-2));
+
+    min-height:100vh;
+    font-family:"Inter",system-ui,sans-serif;
+    color:#111827;
+}
+
+
+/* ================= HEADER ================= */
+
+.bi-header{
+    background:var(--glass);
+    backdrop-filter:blur(18px);
+
+    border:1px solid var(--border);
+    border-radius:18px;
+
+    padding:10px 14px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+
+    box-shadow:var(--shadow-md);
+}
+
+.bi-title{
+    font-size:16px;
+    font-weight:700;
+}
+
+
+/* ================= FILTERS ================= */
+
+.filter-row{
+    margin-left:auto;
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.filter-card{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    background:rgba(255,255,255,.85);
+
+    padding:7px 12px;
+
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,.6);
+
+    box-shadow:var(--shadow-sm);
+}
+
+.filter-card select{
+    border:none;
+    outline:none;
+    background:transparent;
+
+    font-size:12px;
+    font-weight:600;
+
+    color:#374151;
+    cursor:pointer;
+}
+
+
+/* ================= NOTIFICATION ================= */
+
+.alert-wrapper{
+    position:relative;
+
+    width:36px;
+    height:36px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    border-radius:12px;
+
+    background:rgba(255,255,255,.85);
+
+    cursor:pointer;
+
+    box-shadow:var(--shadow-sm);
+}
+
+.alert-badge{
+    position:absolute;
+    top:-3px;
+    right:-3px;
+
+    min-width:18px;
+    height:18px;
+
+    border-radius:50%;
+
+    background:var(--danger);
+    color:white;
+
+    font-size:10px;
+    font-weight:700;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    border:2px solid white;
+}
+
+
+/* ================= KPI ================= */
+
+.kpi-card{
+    position:relative;
+
+    background:var(--glass);
+    backdrop-filter:blur(18px);
+
+    border:1px solid var(--border);
+    border-radius:18px;
+
+    padding:14px 16px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow-md);
+
+    transition:.25s;
+}
+
+.kpi-card:hover{
+    transform:translateY(-3px);
+    box-shadow:var(--shadow-lg);
+}
+
+.kpi-card::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+
+    width:100%;
+    height:3px;
+
+    background:linear-gradient(90deg,var(--primary),#60a5fa);
+}
+
+.kpi-card.success::before{
+    background:linear-gradient(90deg,#16a34a,#4ade80);
+}
+
+.kpi-card.warning::before{
+    background:linear-gradient(90deg,#f59e0b,#fbbf24);
+}
+
+.kpi-card.danger::before{
+    background:linear-gradient(90deg,#ef4444,#fb7185);
+}
+
+.kpi-number{
+    font-size:18px;
+    font-weight:600;
+    line-height:1;
+}
+
+.kpi-label{
+    margin-top:6px;
+
+    font-size:11px;
+    color:#6b7280;
+
+    font-weight:600;
+    text-transform:uppercase;
+}
+
+
+/* ================= PANELS ================= */
+
+.bi-panel{
+    background:var(--glass);
+
+    border:1px solid var(--border);
+    border-radius:18px;
+
+    padding:14px;
+
+    box-shadow:var(--shadow-md);
+
+    height:100%;
+}
+
+.panel-title{
+    font-size:13px;
+    font-weight:700;
+
+    color:#374151;
+
+    margin-bottom:10px;
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.panel-title::before{
+    content:"";
+
+    width:8px;
+    height:8px;
+
+    border-radius:50%;
+
+    background:var(--primary);
+}
+
+
+/* ================= ANIMATION ================= */
+
+.pulse{
+    animation:pulse .35s ease;
+}
+
+@keyframes pulse{
+    0%{
+        transform:scale(.96);
+    }
+    100%{
+        transform:scale(1);
+    }
+}
+
+
+/* ================= CHARTS ================= */
+
+canvas{
+    width:100% !important;
+}
+
+/* small charts */
+
+#statusChart,
+#usersChart,
+#institutionsChart{
+    height:220px !important;
+}
+
+
+/* monthly chart */
+
+.monthly-chart-container{
+    position:relative;
+    height:260px;
+    padding:4px;
+}
+
+#monthlyChart{
+    height:260px !important;
+}
+
+.monthly-chart-container::before{
+    content:"";
+
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+
+    height:60px;
+
+    background:
+    linear-gradient(
+        to bottom,
+        rgba(255,255,255,.28),
+        transparent
+    );
+
+    border-radius:18px;
+
+    pointer-events:none;
+}
+
+
+/* ================= NOTIFICATION MODAL ================= */
+
+.notif-modal{
+    position:fixed;
+    inset:0;
+
+    background:rgba(15,23,42,.3);
+    backdrop-filter:blur(10px);
+
+    display:none;
+    justify-content:flex-end;
+    align-items:flex-start;
+
+    padding:75px 20px;
+
+    z-index:9999;
+}
+
+.notif-modal.show{
+    display:flex;
+}
+
+.notif-card{
+    width:380px;
+    max-width:95vw;
+
+    background:var(--glass-strong);
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow-lg);
+
+    animation:slideIn .25s ease;
+}
+
+@keyframes slideIn{
+    from{
+        opacity:0;
+        transform:translateY(-15px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.notif-header{
+    display:flex;
+    justify-content:space-between;
+
+    padding:14px 16px;
+
+    border-bottom:1px solid rgba(0,0,0,.05);
+}
+
+.notif-header h6{
+    margin:0;
+
+    font-size:15px;
+    font-weight:700;
+}
+
+.notif-header small{
+    color:#6b7280;
+}
+
+.notif-close{
+    width:34px;
+    height:34px;
+
+    border:none;
+    border-radius:10px;
+
+    background:#f3f4f6;
+
+    cursor:pointer;
+}
+
+.notif-body{
+    max-height:450px;
+    overflow-y:auto;
+}
+
+.notif-item{
+    display:block;
+
+    padding:12px 15px;
+
+    text-decoration:none;
+
+    color:#111827;
+
+    border-bottom:1px solid rgba(0,0,0,.05);
+
+    transition:.2s;
+}
+
+.notif-item:hover{
+    background:rgba(59,130,246,.05);
+}
+
+.notif-title{
+    font-size:13px;
+    font-weight:700;
+}
+
+.notif-meta{
+    margin-top:4px;
+
+    font-size:11px;
+
+    color:#6b7280;
+}
+
+.empty-state{
+    padding:40px 20px;
+
+    text-align:center;
+
+    color:#9ca3af;
+}
+
+
+/* ================= SCROLLBAR ================= */
+
+::-webkit-scrollbar{
+    width:7px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#d1d5db;
+    border-radius:20px;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media(max-width:768px){
+
+    .bi-header{
+        flex-direction:column;
+        align-items:center;
+    }
+
+    .filter-row{
+        width:100%;
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+
+    .kpi-number{
+        font-size:16px;
+    }
+
+    #statusChart,
+    #usersChart,
+    #institutionsChart{
+        height:180px !important;
+    }
+
+    .monthly-chart-container{
+        height:200px;
+    }
+
+    #monthlyChart{
+        height:200px !important;
+    }
+
+    .notif-card{
+        width:100%;
+    }
+
+}
+
+</style>
+
+<div class="container-fluid px-3 py-3">
+
+    <!-- ================= HEADER ================= -->
+    <div class="bi-header mb-3">
+
+        <div class="bi-title">
+            📊 Dashboard
+        </div>
+        <div class="filter-row ms-auto">
+            <!-- DATE FILTER -->
+            <div class="filter-card">
+                <i class="bi bi-calendar3"></i>
+                <select id="dateFilter" onchange="refreshDashboard()">
+                    <option value="today" selected>Today</option>
+                    <option value="week">Last Week</option>
+                    <option value="month">This Month</option>
+                    <option value="last_month">Last Month</option>
+                    <option value="year">This Year</option>
+                </select>
+            </div>
+            <!-- STATUS FILTER -->
+            <div class="filter-card">
+                <i class="bi bi-funnel"></i>
+                <select id="statusFilter" onchange="refreshDashboard()">
+                    <option value="All">All Status</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            <!-- NOTIFICATION -->
+            <div class="alert-wrapper" onclick="openNotifications()">
+                🔔
+                <span id="notifCount" class="alert-badge">0</span>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ================= KPI ================= -->
+    <div class="row g-3 mb-3">
+
+        <div class="col-md-3 col-sm-6">
+            <div class="kpi-card">
+                <div class="kpi-number" id="totalKPI">0</div>
+                <div class="kpi-label">Total</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="kpi-card success">
+                <div class="kpi-number text-success" id="approvedKPI">0</div>
+                <div class="kpi-label">Approved</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="kpi-card warning">
+                <div class="kpi-number text-warning" id="pendingKPI">0</div>
+                <div class="kpi-label">Pending</div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6">
+            <div class="kpi-card danger">
+                <div class="kpi-number text-danger" id="rejectedKPI">0</div>
+                <div class="kpi-label">Rejected</div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- ================= CHARTS ================= -->
+    <div class="row g-3">
+
+        <!-- STATUS -->
+        <div class="col-lg-4">
+            <div class="bi-panel">
+                <div class="panel-title">
+                    Status Distribution
+                </div>
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+
+        <!-- MONTHLY -->
+        <div class="col-lg-8">
+            <div class="bi-panel">
+                <div class="panel-title">
+                    Monthly Trends
+                </div>
+                <div class="monthly-chart-container">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= LOWER CHARTS ================= -->
+    <div class="row g-3 mt-2">
+        <!-- USERS -->
+        <div class="col-lg-6">
+            <div class="bi-panel">
+                <div class="panel-title">
+                    Users Overview
+                </div>
+                <canvas id="usersChart"></canvas>
+            </div>
+        </div>
+
+
+        <!-- INSTITUTIONS -->
+        <div class="col-lg-6">
+            <div class="bi-panel">
+                <div class="panel-title">
+                    Institutions Overview
+                </div>
+                <canvas id="institutionsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- ================= NOTIFICATION MODAL ================= -->
+<div id="notifModal" class="notif-modal">
+    <div class="notif-card">
+        <div class="notif-header">
+            <div>
+                <h6>Notifications</h6>
+                <small>Latest appointment updates</small>
+            </div>
+            <button class="notif-close" onclick="closeNotifications()">
+                ✕
+            </button>
+        </div>
+
+        <div id="notifList" class="notif-body">
+
+            <div class="empty-state">
+                No notifications
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let charts = {};
+
+/* ==========================================================
+   REFRESH DASHBOARD
+========================================================== */
+async function refreshDashboard() {
+
+    const filter = document.getElementById("dateFilter").value;
+    const status = document.getElementById("statusFilter").value;
+
+    try {
+
+        const response = await fetch(
+            `/appointments/api/analytics?filter=${filter}&status=${status}`
+        );
+
+        const data = await response.json();
+
+        updateKPIs(data);
+        updateCharts(data);
+        loadNotifications();
+
+    }
+    catch (err) {
+
+        console.error("Dashboard refresh error:", err);
+
+    }
+
+}
+
+
+/* ==========================================================
+   KPI ANIMATION
+========================================================== */
+function animateValue(id, value) {
+
+    const el = document.getElementById(id);
+
+    el.classList.remove("pulse");
+
+    setTimeout(() => {
+
+        el.innerText = value.toLocaleString();
+        el.classList.add("pulse");
+
+    }, 50);
+
+}
+
+
+/* ==========================================================
+   UPDATE KPI CARDS
+========================================================== */
+function updateKPIs(data) {
+
+    const approved = data.approved || 0;
+    const pending = data.pending || 0;
+    const rejected = data.rejected || 0;
+
+    const total = data.total || (
+        approved +
+        pending +
+        rejected
+    );
+
+    animateValue("totalKPI", total);
+    animateValue("approvedKPI", approved);
+    animateValue("pendingKPI", pending);
+    animateValue("rejectedKPI", rejected);
+
+}
+
+
+/* ==========================================================
+   NOTIFICATIONS
+========================================================== */
+async function loadNotifications() {
+
+    try {
+
+        const response =
+            await fetch("/appointments/api/notifications");
+
+        const data =
+            await response.json();
+
+        document.getElementById("notifCount").innerText =
+            data.count || 0;
+
+        const list =
+            document.getElementById("notifList");
+
+        if (!data.items || data.items.length === 0) {
+
+            list.innerHTML = `
+                <div class="empty-state">
+                    No notifications
+                </div>
+            `;
+
+            return;
+        }
+
+        list.innerHTML = data.items.map(item => `
+
+            <a class="notif-item"
+               href="/appointment/${item.id}">
+
+                <div class="notif-title">
+                    ⏳ ${item.name}
+                </div>
+
+                <div class="notif-meta">
+                    ${item.service}
+                    •
+                    ${item.date}
+                </div>
+
+            </a>
+
+        `).join("");
+
+    }
+    catch (err) {
+
+        console.error(err);
+
+    }
+
+}
+
+
+/* ==========================================================
+   NOTIFICATION MODAL
+========================================================== */
+function openNotifications() {
+
+    document
+        .getElementById("notifModal")
+        .classList.add("show");
+
+}
+
+function closeNotifications() {
+
+    document
+        .getElementById("notifModal")
+        .classList.remove("show");
+
+}
+
+window.addEventListener("click", e => {
+
+    if (e.target === document.getElementById("notifModal")) {
+
+        closeNotifications();
+
+    }
+
+});
+
+
+/* ==========================================================
+   DESTROY CHARTS
+========================================================== */
+function destroyCharts() {
+
+    Object.keys(charts).forEach(key => {
+
+        if (charts[key]) {
+
+            charts[key].destroy();
+
+        }
+
+    });
+
+}
+
+
+/* ==========================================================
+   UPDATE CHARTS
+========================================================== */
+function updateCharts(data) {
+
+    destroyCharts();
+
+    /* ======================================================
+       STATUS DOUGHNUT
+    ====================================================== */
+
+    charts.status = new Chart(
+
+        document.getElementById("statusChart"),
+
+        {
+
+            type: "doughnut",
+
+            data: {
+
+                labels: [
+
+                    "Approved",
+                    "Pending",
+                    "Rejected"
+
+                ],
+
+                datasets: [{
+
+                    data: [
+
+                        data.approved || 0,
+                        data.pending || 0,
+                        data.rejected || 0
+
+                    ],
+
+                    backgroundColor: [
+
+                        "#22c55e",
+                        "#f59e0b",
+                        "#ef4444"
+
+                    ],
+
+                    borderWidth: 0
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                cutout: "70%",
+
+                plugins: {
+
+                    legend: {
+
+                        position: "bottom"
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+
+    /* ======================================================
+       MONTHLY CHART
+    ====================================================== */
+
+    const labels =
+        (data.monthly || []).map(x => x.label);
+
+    const values =
+        (data.monthly || []).map(x => x.count);
+
+    const ctx =
+        document
+        .getElementById("monthlyChart")
+        .getContext("2d");
+
+    const gradient =
+        ctx.createLinearGradient(0,0,0,350);
+
+    gradient.addColorStop(
+        0,
+        "rgba(37,99,235,.5)"
+    );
+
+    gradient.addColorStop(
+        1,
+        "rgba(37,99,235,.08)"
+    );
+
+    charts.monthly = new Chart(
+
+        document.getElementById("monthlyChart"),
+
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels,
+
+                datasets: [{
+
+                    label: "Appointments",
+
+                    data: values,
+
+                    backgroundColor: gradient,
+
+                    borderColor: "#2563eb",
+
+                    borderWidth: 2,
+
+                    borderRadius: 16,
+
+                    borderSkipped: false,
+
+                    maxBarThickness: 55
+
+                }]
+
+            },
+
+            options: {
+
+                maintainAspectRatio: false,
+
+                responsive: true,
+
+                plugins: {
+
+                    legend: {
+
+                        display: false
+
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+
+                        grid: {
+
+                            display: false
+
+                        }
+
+                    },
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+
+                            precision: 0
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+
+    /* ======================================================
+       USERS CHART
+    ====================================================== */
+
+    charts.users = new Chart(
+
+        document.getElementById("usersChart"),
+
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels:
+                    Object.keys(data.users || {}),
+
+                datasets: [{
+
+                    data:
+                        Object.values(data.users || {}),
+
+                    backgroundColor: "#6366f1",
+
+                    borderRadius: 12
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                plugins: {
+
+                    legend: {
+
+                        display: false
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+
+    /* ======================================================
+       INSTITUTIONS
+    ====================================================== */
+
+    charts.inst = new Chart(
+
+        document.getElementById("institutionsChart"),
+
+        {
+
+            type: "bar",
+
+            data: {
+
+                labels:
+                    Object.keys(data.institutions || {}),
+
+                datasets: [{
+
+                    data:
+                        Object.values(data.institutions || {}),
+
+                    backgroundColor: "#0ea5e9",
+
+                    borderRadius: 12
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                indexAxis: "y",
+
+                plugins: {
+
+                    legend: {
+
+                        display: false
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+}
+
+
+/* ==========================================================
+   FILTER EVENTS
+========================================================== */
+
+document
+    .getElementById("dateFilter")
+    .addEventListener(
+        "change",
+        refreshDashboard
+    );
+
+document
+    .getElementById("statusFilter")
+    .addEventListener(
+        "change",
+        refreshDashboard
+    );
+
+
+/* ==========================================================
+   AUTO REFRESH
+========================================================== */
+
+setInterval(
+    refreshDashboard,
+    10000
+);
+
+
+/* ==========================================================
+   INITIAL LOAD
+========================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        refreshDashboard();
+
+    }
+);
+
+</script>
+{% endblock %}
